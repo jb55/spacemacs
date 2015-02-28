@@ -36,6 +36,9 @@ of a list then all discovered layers will be installed.")
 Press <SPC> T n to cycle to the next theme in the list (works great
 with 2 themes variants, one dark and one light")
 
+(defvar dotspacemacs-colorize-cursor-according-to-state t
+  "If non nil the cursor color matches the state color.")
+
 (defvar dotspacemacs-leader-key "SPC"
   "The leader key.")
 
@@ -58,6 +61,11 @@ with `:' and Emacs commands are executed with `<leader> :'.")
 
 (defvar dotspacemacs-guide-key-delay 0.4
   "Guide-key delay in seconds.")
+
+(defvar dotspacemacs-loading-progress-bar t
+  "If non nil a progress bar is displayed when spacemacs is loading. This
+may increase the boot time on some systems and emacs builds, set it to nil
+to boost the loading time.")
 
 (defvar dotspacemacs-helm-micro-state t
   "Enable micro-state for helm buffer when pressing on TAB.")
@@ -97,7 +105,7 @@ it reaches the top or bottom of the screen.")
 (defvar dotspacemacs-smartparens-strict-mode nil
   "If non-nil smartparens-strict-mode will be enabled in programming modes.")
 
-(defvar dotspacemacs-delete-orhpan-packages t
+(defvar dotspacemacs-delete-orphan-packages t
   "If non-nil spacemacs will delete any orphan packages, i.e. packages that are
 declared in a layer which is not a member of
  `dotspacemacs-configuration-layers'")
@@ -129,8 +137,7 @@ before installing the file if the destination already exists."
       (message "%s has been installed." dotfile))))
 
 (defun dotspacemacs/load ()
-  "Load ~/.spacemacs. If it is not found then copy .spacemacs.template to
-~/.spacemacs"
+  "Load ~/.spacemacs if it exists."
   (let ((dotspacemacs (dotspacemacs/location)))
     (if (file-exists-p dotspacemacs) (load dotspacemacs))))
 

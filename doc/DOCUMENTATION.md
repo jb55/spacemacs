@@ -76,12 +76,13 @@
             - [Smooth scrolling](#smooth-scrolling)
         - [Vim motions with ace-jump mode](#vim-motions-with-ace-jump-mode)
         - [Window manipulation](#window-manipulation)
-            - [Resizing windows](#resizing-windows)
-            - [Reposition window](#reposition-window)
+            - [Window manipulation key bindings](#window-manipulation-key-bindings)
+            - [Window manipulation micro-state](#window-manipulation-micro-state)
             - [Golden ratio](#golden-ratio)
         - [Buffers and Files](#buffers-and-files)
             - [Emacs and Spacemacs files](#emacs-and-spacemacs-files)
         - [Ido](#ido)
+        - [Ido micro-state](#ido-micro-state)
         - [NeoTree file tree](#neotree-file-tree)
             - [NeoTree navigation](#neotree-navigation)
             - [Opening files with NeoTree](#opening-files-with-neotree)
@@ -123,10 +124,9 @@
         - [Commenting](#commenting)
         - [Deleting files](#deleting-files)
         - [Editing Lisp code](#editing-lisp-code)
-            - [Lisp state Key Bindings](#lisp-state-key-bindings)
-                - [Lisp state Auto-switch commands](#lisp-state-auto-switch-commands)
-                - [Lisp state commands](#lisp-state-commands)
-                - [Lisp state Other commands](#lisp-state-other-commands)
+            - [Lisp Key Bindings](#lisp-key-bindings)
+                - [Lisp state key bindings](#lisp-state-key-bindings)
+                - [Emacs lisp specific key bindings](#emacs-lisp-specific-key-bindings)
         - [Managing projects](#managing-projects)
     - [Registers](#registers)
     - [Errors handling](#errors-handling)
@@ -618,7 +618,7 @@ which is a _very_ narrow use case,
 - `c` accept motions and can do everything `s` can do in `normal state`,
 - this is also true for `r` but `r` is more useful because it stays in
 `normal state`.
-- `surround` command is just a more powerful command that `s`
+- `surround` command is just a more powerful command than `s`
 
 If you are not convinced, then here is the snippet to revert back to the default
 `Vim + vim-surround` setup (add it to your `dotspacemacs/config` function or
@@ -674,7 +674,7 @@ By default, `Spacemacs` uses the theme [solarized-light][solarized-theme].
 
 It is possible to define your default themes in your `~/.spacemacs` with
 the variable `dotspacemacs-themes`. For instance, to specify `leuven` and
-`zenburn` (high contract theme and low contrast theme):
+`zenburn` (high contrast theme and low contrast theme):
 
 ```elisp
 (setq-default dotspacemacs-themes '(leuven zenburn))
@@ -780,7 +780,7 @@ Some graphical UI indicators can be toggled on and off (toggles start with `t`):
 
 ### Mode-line
 
-The mode line is an heavily customized [powerline][powerline] with the
+The mode line is a heavily customized [powerline][powerline] with the
 following capabilities:
 - show the window number
 - color code for current state
@@ -911,7 +911,7 @@ display ASCII characters instead (may be useful in terminal).
 
 `Spacemacs` is based on `Vim` modal user interface to navigate and edit text.
 If you are not familiar with the `Vim` way of editing text you can try the
-[evil tutor][] lessons by pressing <kbd>SPC h T</kbd> at any time.
+ [evil tutor][] lessons by pressing <kbd>SPC h T</kbd> at any time.
 
 ### Escaping
 
@@ -987,36 +987,33 @@ to read the [Helm documentation wiki][helm-doc].
 `Spacemacs` defines a [micro-state](#micro-states) for `Helm` to make it
 work like [Vim's Unit][] plugin.
 
-Initiate the micro-state with <kbd>TAB</kbd> while in a `Helm` buffer. Use
-<kbd>TAB</kbd> again to exit from the micro-state (actually, like with any
-micro-state, pressing any key that is not bound to the micro-state key map
-will turn-off the micro-state).
+Initiate the micro-state with <kbd>C-SPC</kbd> while in a `Helm` buffer.
+Use <kbd>C-SPC</kbd> again to exit from the micro-state.
 
-Key Binding         | Description
---------------------|------------------------------------------------------------
-<kbd>TAB</kbd>      | initiate the micro-state
-<kbd>1</kbd>        | execute action 0
-<kbd>2</kbd>        | execute action 1
-<kbd>3</kbd>        | execute action 2
-<kbd>4</kbd>        | execute action 3
-<kbd>5</kbd>        | execute action 4
-<kbd>6</kbd>        | execute action 5
-<kbd>7</kbd>        | execute action 6
-<kbd>8</kbd>        | execute action 7
-<kbd>9</kbd>        | execute action 8
-<kbd>0</kbd>        | execute action 9
-<kbd>a</kbd>        | switch to actions page
-<kbd>g</kbd>        | go to first candidate
-<kbd>G</kbd>        | go to last candidate
-<kbd>h</kbd>        | go to previous source
-<kbd>j</kbd>        | select next candidate
-<kbd>k</kbd>        | select previous candidate
-<kbd>l</kbd>        | go to next source
-<kbd>r</kbd>        | switch to actions page and leave the micro-state (useful combined with <kbd>TAB</kbd>)
-<kbd>t</kbd>        | mark current candidate
-<kbd>T</kbd>        | mark all candidates
-<kbd>v</kbd>        | execute persistent action
-Any other key       | leave the micro-state
+Key Binding           | Description
+----------------------|------------------------------------------------------------
+<kbd>C-SPC</kbd>      | initiate or leave the micro-state
+<kbd>TAB</kbd>        | switch to actions page and leave the micro-state
+<kbd>1</kbd>          | execute action 0
+<kbd>2</kbd>          | execute action 1
+<kbd>3</kbd>          | execute action 2
+<kbd>4</kbd>          | execute action 3
+<kbd>5</kbd>          | execute action 4
+<kbd>6</kbd>          | execute action 5
+<kbd>7</kbd>          | execute action 6
+<kbd>8</kbd>          | execute action 7
+<kbd>9</kbd>          | execute action 8
+<kbd>0</kbd>          | execute action 9
+<kbd>a</kbd>          | switch to actions page
+<kbd>g</kbd>          | go to first candidate
+<kbd>G</kbd>          | go to last candidate
+<kbd>h</kbd>          | go to previous source
+<kbd>j</kbd>          | select next candidate
+<kbd>k</kbd>          | select previous candidate
+<kbd>l</kbd>          | go to next source
+<kbd>t</kbd>          | mark current candidate
+<kbd>T</kbd>          | mark all candidates
+<kbd>v</kbd>          | execute persistent action
 
 ## Discovering
 
@@ -1344,6 +1341,31 @@ Key Binding             |                 Description
 <kbd>C-t</kbd>          | open selected file in a new frame
 <kbd>C-v</kbd>          | open selected file in a horizontally split window
 
+### Ido micro-state
+
+`Spacemacs` defines a [micro-state](#micro-states) for `ido`.
+
+Initiate the micro-state with <kbd>C-SPC</kbd> while in a `ido` buffer.
+Use <kbd>C-SPC</kbd> again to exit from the micro-state.
+
+Key Binding           | Description
+----------------------|------------------------------------------------------------
+<kbd>C-SPC</kbd>      | initiate or leave the micro-state
+<kbd>?</kbd>          | display help
+<kbd>e</kbd>          | open dired
+<kbd>h</kbd>          | delete backward or parent directory
+<kbd>j</kbd>          | next match
+<kbd>J</kbd>          | sub directory
+<kbd>k</kbd>          | previous match
+<kbd>K</kbd>          | parent directory
+<kbd>l</kbd>          | select match
+<kbd>n</kbd>          | next directory in history
+<kbd>o</kbd>          | open in other window
+<kbd>p</kbd>          | previous directory in history
+<kbd>s</kbd>          | open in a new horizontal split
+<kbd>t</kbd>          | open in other frame
+<kbd>v</kbd>          | open in a new vertical split
+
 ### NeoTree file tree
 
 `Spacemacs` provides a quick and simple way to navigate in an unknown project
@@ -1372,6 +1394,7 @@ Key Binding                      |                 Description
 <kbd>K</kbd>                     | parent directory, when reaching the root change it to parent directory
 <kbd>l</kbd> or <kbd>RET</kbd>   | expand directory
 <kbd>L</kbd>                     | next sibling
+<kbd>R</kbd>                     | make a directory the root directory
 
 **Note:** The point is automatically set to the first letter of a node for a
 smoother experience.
@@ -1905,80 +1928,67 @@ to `nil` in your `~/.spacemacs`.
 
 Edition of lisp code is provided by [evil-lisp-state][].
 
-Some commands will set the current state to `lisp state` where
+Commands will set the current state to `lisp state` where
 different commands combo can be repeated without pressing on
 <kbd>SPC m</kbd>.
 
 When in `lisp state` the color of the mode-line changes to pink.
 
 Examples:
-- to slurp three times while in normal state: <kbd>SPC m 3 n</kbd>
-- to wrap a symbol in parenthesis then slurping two times: <kbd>SPC m w 2 n</kbd>
+- to slurp three times while in normal state: <kbd>SPC k 3 n</kbd>
+- to wrap a symbol in parenthesis then slurping two times: <kbd>SPC k w 2 n</kbd>
 
-#### Lisp state Key Bindings
+**Note** The `lisp state` commands are available in _any_ modes! Try it out.
 
-##### Lisp state Auto-switch commands
+#### Lisp Key Bindings
 
-These commands switch to `lisp state`.
+##### Lisp state key bindings
+
+These commands automatically switch to `lisp state`.
 
 Key Binding          | Function
 ---------------------|------------------------------------------------------------
-<kbd>SPC</kbd>       | evil leader
-<kbd>SPC m %</kbd>   | evil jump item
-<kbd>SPC m :</kbd>   | ex command
-<kbd>SPC m (</kbd>   | insert expression before (same level as current one)
-<kbd>SPC m )</kbd>   | insert expression after (same level as current one)
-<kbd>SPC m $</kbd>   | go to the end of current sexp
-<kbd>SPC m 0</kbd>   | go to the beginning of current sexp
-<kbd>SPC m a</kbd>   | absorb expression
-<kbd>SPC m A</kbd>   | transpose expression
-<kbd>SPC m b</kbd>   | forward barf expression
-<kbd>SPC m B</kbd>   | backward barf expression
-<kbd>SPC m c</kbd>   | convolute expression
-<kbd>SPC m h</kbd>   | backward char
-<kbd>SPC m H</kbd>   | previous symbol
-<kbd>SPC m i</kbd>   | switch to `insert state`
-<kbd>SPC m I</kbd>   | go to beginning of current expression and switch to `insert state`
-<kbd>SPC m j</kbd>   | next visual line
-<kbd>SPC m J</kbd>   | next closing parenthesis
-<kbd>SPC m k</kbd>   | previous visual line
-<kbd>SPC m K</kbd>   | previous opening parenthesis
-<kbd>SPC m l</kbd>   | forward char
-<kbd>SPC m L</kbd>   | next symbol
-<kbd>SPC m m</kbd>   | merge (join) expression
-<kbd>SPC m n</kbd>   | forwared slurp expression
-<kbd>SPC m N</kbd>   | backward slurp expression
-<kbd>SPC m p</kbd>   | paste after
-<kbd>SPC m P</kbd>   | paste before
-<kbd>SPC m q</kbd>   | unwrap current expression and kill all symbols after point
-<kbd>SPC m Q</kbd>   | unwrap current expression and kill all symbols before point
-<kbd>SPC m r</kbd>   | raise expression (replace parent expression by current one)
-<kbd>SPC m u</kbd>   | undo
-<kbd>SPC m C-r</kbd> | redo
-<kbd>SPC m v</kbd>   | switch to `visual state`
-<kbd>SPC m V</kbd>   | switch to `visual line state`
-<kbd>SPC m C-v</kbd> | switch to `visual block state`
-<kbd>SPC m w</kbd>   | wrap expression with parenthesis
-<kbd>SPC m W</kbd>   | unwrap expression
-<kbd>SPC m xs</kbd>  | delete symbol
-<kbd>SPC m xw</kbd>  | delete word
-<kbd>SPC m xx</kbd>  | delete expression
-<kbd>SPC m y</kbd>   | copy expression
+<kbd>SPC k %</kbd>   | evil jump item
+<kbd>SPC k :</kbd>   | ex command
+<kbd>SPC k (</kbd>   | insert expression before (same level as current one)
+<kbd>SPC k )</kbd>   | insert expression after (same level as current one)
+<kbd>SPC k $</kbd>   | go to the end of current sexp
+<kbd>SPC k 0</kbd>   | go to the beginning of current sexp
+<kbd>SPC k a</kbd>   | absorb expression
+<kbd>SPC k b</kbd>   | forward barf expression
+<kbd>SPC k B</kbd>   | backward barf expression
+<kbd>SPC k c</kbd>   | convolute expression
+<kbd>SPC k ds</kbd>  | delete symbol
+<kbd>SPC k Ds</kbd>  | backward delete symbol
+<kbd>SPC k dw</kbd>  | delete word
+<kbd>SPC k Dw</kbd>  | backward delete word
+<kbd>SPC k dx</kbd>  | delete expression
+<kbd>SPC k Dx</kbd>  | backward delete expression
+<kbd>SPC k e</kbd>   | unwrap current expression and kill all symbols after point
+<kbd>SPC k E</kbd>   | unwrap current expression and kill all symbols before point
+<kbd>SPC k h</kbd>   | previous symbol
+<kbd>SPC k i</kbd>   | switch to `insert state`
+<kbd>SPC k I</kbd>   | go to beginning of current expression and switch to `insert state`
+<kbd>SPC k j</kbd>   | next closing parenthesis
+<kbd>SPC k J</kbd>   | join expression
+<kbd>SPC k k</kbd>   | previous opening parenthesis
+<kbd>SPC k l</kbd>   | next symbol
+<kbd>SPC k p</kbd>   | paste after
+<kbd>SPC k P</kbd>   | paste before
+<kbd>SPC k r</kbd>   | raise expression (replace parent expression by current one)
+<kbd>SPC k s</kbd>   | forwared slurp expression
+<kbd>SPC k S</kbd>   | backward slurp expression
+<kbd>SPC k t</kbd>   | transpose expression
+<kbd>SPC k u</kbd>   | undo
+<kbd>SPC k C-r</kbd> | redo
+<kbd>SPC k v</kbd>   | switch to `visual state`
+<kbd>SPC k V</kbd>   | switch to `visual line state`
+<kbd>SPC k C-v</kbd> | switch to `visual block state`
+<kbd>SPC k w</kbd>   | wrap expression with parenthesis
+<kbd>SPC k W</kbd>   | unwrap expression
+<kbd>SPC k y</kbd>   | copy expression
 
-##### Lisp state commands
-
-These commands can be executed in `lisp state'.
-
-Key Binding    | Function
----------------|------------------------------------------------------------
-<kbd>h</kbd>   | backward char
-<kbd>j</kbd>   | next visual line
-<kbd>k</kbd>   | previous visual line
-<kbd>l</kbd>   | forward char
-
-##### Lisp state Other commands
-
-These commands can be executed in any state.
+##### Emacs lisp specific key bindings
 
 Key Binding          | Function
 ---------------------|------------------------------------------------------------
@@ -2235,14 +2245,17 @@ Achievements                                         | Account
 [300th issue (PR)][300th-issue]                      | [danielwuz][]
 [400th issue (PR)][400th-issue]                      | [CestDiego][]
 [500th issue (PR)][500th-issue]                      | [bjarkevad][]
+[600th issue (PR)][600th-issue]                      | [bjarkevad][]
 [100th pull request][100th-PR]                       | [bru][]
 [200th pull request][200th-PR]                       | [smt][]
+[300th pull request][300th-PR]                       | [BrianHicks][]
 PR gunner (8 PRs in a row)                           | [ralesi][]
 100th fork                                           | [balajisivaraman][]
 100th star                                           | [Jackneill][]
 200th star                                           | [jb55][]
 400th star                                           | [dbohdan][]
 600th star                                           | [laat][]
+700th star                                           | [kendall][]
 
 # Thank you
 
@@ -2338,12 +2351,14 @@ developers to elisp hackers!
 [1st-article]: http://oli.me.uk/2014/11/06/spacemacs-emacs-vim/
 [1st-cbanner]: https://github.com/syl20bnr/spacemacs/commit/7b44a56263049482ed540ed6815a295633ffe9d1
 [100th-issue]: https://github.com/syl20bnr/spacemacs/pull/100
-[200th-issue]: https://github.com/syl20bnr/spacemacs/pull/200
+[200th-issue]: https://github.com/syl20bnr/spacemacs/issues/200
 [300th-issue]: https://github.com/syl20bnr/spacemacs/pull/300
 [400th-issue]: https://github.com/syl20bnr/spacemacs/pull/400
 [500th-issue]: https://github.com/syl20bnr/spacemacs/pull/500
+[600th-issue]: https://github.com/syl20bnr/spacemacs/pull/600
 [100th-PR]: https://github.com/syl20bnr/spacemacs/pull/228
 [200th-PR]: https://github.com/syl20bnr/spacemacs/pull/418
+[300th-PR]: https://github.com/syl20bnr/spacemacs/pull/617
 [trishume]:https://github.com/trishume
 [Wolfy87]:https://github.com/Wolfy87
 [danielwuz]:https://github.com/danielwuz
