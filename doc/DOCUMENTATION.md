@@ -1295,6 +1295,7 @@ Key Binding                               |                 Description
 ------------------------------------------|----------------------------------------------------------------
 <kbd>SPC f D</kbd>                        | delete a file and the associated buffer (ask for confirmation)
 <kbd>SPC f f</kbd>                        | open a file using `ido`
+<kbd>SPC f F</kbd>                        | open a file under point using `helm`
 <kbd>SPC f j</kbd>                        | jump to the current buffer file in dired
 <kbd>SPC f o</kbd>                        | open a file using the default external program
 <kbd>SPC f s</kbd>                        | save a file
@@ -1371,9 +1372,8 @@ Key Binding           | Description
 `Spacemacs` provides a quick and simple way to navigate in an unknown project
 file tree with [NeoTree][neotree].
 
-To toggle the `NeoTree` buffer press:
-
-    <SPC> f t
+To toggle the `NeoTree` buffer press <kbd>SPC f t</kbd> or <kbd>SPC p t</kbd>
+(the latter open NeoTree with the root set to the projectile project root).
 
 The NeoTree window always has the number `0` so it does not shift the current
 number of the other windows. To select the NeoTree window you then use
@@ -2021,7 +2021,7 @@ To search in a project see [project searching](#project-searching).
 <kbd>SPC p a</kbd>  | run `ag`
 <kbd>SPC p A</kbd>  | run `ack`
 <kbd>SPC p b</kbd>  | switch to project buffer
-<kbd>SPC p c</kbd>  | compile project
+<kbd>SPC p c</kbd>  | compile project using `projectile`
 <kbd>SPC p d</kbd>  | find directory
 <kbd>SPC p D</kbd>  | open project root in `dired`
 <kbd>SPC p f</kbd>  | find file
@@ -2034,9 +2034,10 @@ To search in a project see [project searching](#project-searching).
 <kbd>SPC p R</kbd>  | regenerate the project's [e|g]tags
 <kbd>SPC p r</kbd>  | replace a string
 <kbd>SPC p s</kbd>  | switch project
-<kbd>SPC p t</kbd>  | find tags
+<kbd>SPC p t</kbd>  | open `NeoTree` in `projectile` root
 <kbd>SPC p T</kbd>  | find test files
 <kbd>SPC p v</kbd>  | open project root in `vc-dir` or `magit`
+<kbd>SPC p y</kbd>  | find tags
 
 ## Registers
 

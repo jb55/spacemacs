@@ -13,6 +13,7 @@
 (defvar jb55-packages
   '(
     jade-mode
+    coffee-mode
     markdown-mode
     markdown-toc
     js2-mode

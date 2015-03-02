@@ -604,6 +604,9 @@ which require an initialization must be listed explicitly in the list.")
       ;; Make evil-mode up/down operate in screen lines instead of logical lines
       (define-key evil-normal-state-map "j" 'evil-next-visual-line)
       (define-key evil-normal-state-map "k" 'evil-previous-visual-line)
+      ;; Also in visual mode
+      (define-key evil-visual-state-map "j" 'evil-next-visual-line)
+      (define-key evil-visual-state-map "k" 'evil-previous-visual-line)
       ;; Make the current definition and/or comment visible.
       (define-key evil-normal-state-map "zf" 'reposition-window)
       ;; quick navigation
@@ -1327,6 +1330,20 @@ which require an initialization must be listed explicitly in the list.")
   (use-package helm-ag
     :defer t))
 
+(defun spacemacs/init-helm-c-yasnippet ()
+  (use-package helm-c-yasnippet
+    :defer t
+    :init
+    (progn
+      (defun spacemacs/helm-yas ()
+        "Properly lazy load helm-c-yasnipper."
+        (interactive)
+        (spacemacs/load-yasnippet)
+        (require 'helm-c-yasnippet)
+        (call-interactively 'helm-yas-complete))
+      (evil-leader/set-key "is" 'spacemacs/helm-yas)
+      (setq helm-c-yas-space-match-any-greedy t))))
+
 (defun spacemacs/init-helm-descbinds ()
   (use-package helm-descbinds
     :defer t
@@ -1538,7 +1555,7 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
         "Initialization of ido micro-state."
         (setq spacemacs--ido-navigation-ms-enabled t)
         (spacemacs//ido-navigation-ms-set-face)
-        ) 
+        )
       (defun spacemacs//ido-navigation-ms-on-exit ()
         "Action to perform when exiting ido micro-state."
         (setq face-remapping-alist nil))
@@ -1628,6 +1645,7 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
 (defun spacemacs/init-neotree ()
   (use-package neotree
     :defer t
+    :commands neo-global--window-exists-p
     :init
     (progn
       (add-to-list 'evil-motion-state-modes 'neotree-mode)
@@ -1683,6 +1701,12 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
                   (neotree-select-up-node))
               (neotree-select-up-node)))))
 
+      (defun neotree-find-project-root ()
+        (interactive)
+        (if (neo-global--window-exists-p)
+            (neotree-hide)
+          (neotree-find (projectile-project-root))))
+
       (defun spacemacs//neotree-key-bindings ()
         "Set the key bindings for a neotree buffer."
         (define-key evil-motion-state-local-map (kbd "TAB") 'neotree-stretch-toggle)
@@ -1704,7 +1728,10 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
         (define-key evil-motion-state-local-map (kbd "R")   'neotree-change-root)
         (define-key evil-motion-state-local-map (kbd "s")   'neotree-hidden-file-toggle))
 
-      (evil-leader/set-key "ft" 'neotree-toggle))
+      (evil-leader/set-key
+        "ft" 'neotree-toggle
+        "pt" 'neotree-find-project-root))
+
     :config
     (add-to-hook 'neotree-mode-hook '(spacemacs//init-neotree
                                       spacemacs//neotree-key-bindings))))
@@ -2059,7 +2086,9 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
                projectile-find-tag
                projectile-kill-buffers
                projectile-recentf
-               projectile-invalidate-cache)
+               projectile-invalidate-cache
+               projectile-project-root
+               )
     :init
     (progn
       (setq-default projectile-enable-caching t)
@@ -2089,7 +2118,7 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
         "po" 'projectile-multi-occur
         "pr" 'projectile-replace
         "pR" 'projectile-regenerate-tags
-        "pt" 'projectile-find-tag
+        "py" 'projectile-find-tag
         "pT" 'projectile-find-test-file))
     :config
     (progn
@@ -2375,7 +2404,10 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
                 (let* ((dir (configuration-layer/get-layer-property 'spacemacs :ext-dir))
                        (private-yas-dir (concat configuration-layer-private-directory "snippets"))
                        (yas-dir (concat dir "yasnippet-snippets")))
-                  (setq yas-snippet-dirs (list  private-yas-dir yas-dir))
+                  (setq yas-snippet-dirs
+                        (append (when (boundp 'yas-snippet-dirs)
+                                  yas-snippet-dirs)
+                                (list  private-yas-dir yas-dir)))
                   (yas-global-mode 1)))))
       (add-to-hooks 'spacemacs/load-yasnippet '(prog-mode-hook
                                                 markdown-mode-hook
@@ -2389,10 +2421,7 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
                                                      shell-mode-hook)))
     :config
     (progn
-      (spacemacs|diminish yas-minor-mode " Ⓨ" " Y")
-      (require 'helm-c-yasnippet)
-      (evil-leader/set-key "is" 'helm-yas-complete)
-      (setq helm-c-yas-space-match-any-greedy t))))
+      (spacemacs|diminish yas-minor-mode " Ⓨ" " Y"))))
 
 (defun spacemacs/init-zenburn-theme ()
   (use-package zenburn-theme
