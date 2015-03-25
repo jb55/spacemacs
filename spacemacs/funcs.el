@@ -67,8 +67,10 @@
   "Declare a prefix PREFIX. PREFIX is a string describing
 a key sequence. NAME is a symbol name used as the prefix command."
   (let ((command (intern (concat spacemacs/prefix-command-string name))))
-    (define-prefix-command command)
-    (evil-leader/set-key prefix command)))
+    ;; define the prefix command only if it does not already exist
+    (unless (lookup-key evil-leader--default-map prefix)
+      (define-prefix-command command)
+      (evil-leader/set-key prefix command))))
 
 ;; Waiting to fix the issue with guide-key before reactivating/updating this
 ;; function
@@ -80,39 +82,23 @@ a key sequence. NAME is a symbol name used as the prefix command."
 ;;     (define-prefix-command command)
 ;;     (evil-leader/set-key-for-mode mode prefix command)))
 
-(defun spacemacs/activate-evil-leader-for-maps (map-list)
-  "Remove the evil-leader binding from all the maps in MAP-LIST."
-  (mapc (lambda (x)
-          (eval `(define-key ,x (kbd evil-leader/leader)
-                   evil-leader--default-map)))
-        map-list))
-
-(defun spacemacs/activate-evil-leader-for-map (map)
-  "Remove the evil-leader binding from the passed MAP."
-  (spacemacs/activate-evil-leader-for-maps `(,map)))
-
 (defun spacemacs/activate-major-mode-leader ()
   "Bind major mode key map to `dotspacemacs-major-mode-leader-key'."
   (setq mode-map (cdr (assoc major-mode evil-leader--mode-maps)))
   (when mode-map
     (setq major-mode-map (lookup-key mode-map (kbd "m")))
-    (define-key evil-normal-state-local-map
-      (kbd dotspacemacs-major-mode-leader-key) major-mode-map)
-    (define-key evil-motion-state-local-map
-      (kbd dotspacemacs-major-mode-leader-key) major-mode-map)))
-
-(defmacro spacemacs|evilify (map &rest body)
-  "Add `hjkl' navigation, search and visual state to MAP and set additional
-bindings contained in BODY."
-  `(evil-add-hjkl-bindings ,map 'emacs
-    "/" 'evil-search-forward
-    "n" ',(lookup-key evil-motion-state-map "n")
-    "N" ',(lookup-key evil-motion-state-map "N")
-    "v" 'evil-visual-char
-    "V" 'evil-visual-line
-    (kbd "C-v") 'evil-visual-block
-    "y" 'evil-yank
-    ,@body))
+    (mapc (lambda (s)
+            (eval `(define-key
+                     ,(intern (format "evil-%S-state-local-map" s))
+                     ,(kbd dotspacemacs-major-mode-leader-key)
+                     major-mode-map)))
+          '(normal motion))
+    (mapc (lambda (s)
+            (eval `(define-key
+                     ,(intern (format "evil-%S-state-local-map" s))
+                     ,(kbd dotspacemacs-major-mode-emacs-leader-key)
+                     major-mode-map)))
+          '(emacs insert normal motion visual))))
 
 (defun spacemacs/split-and-new-line ()
   "Split a quoted string or s-expression and insert a new line with
@@ -776,3 +762,9 @@ If ASCII si not provided then UNICODE is used instead."
   (interactive)
   (let ((comint-buffer-maximum-size 0))
     (comint-truncate-buffer)))
+
+(defmacro spacemacs|reset-local-company-backends (mode)
+  "Helper to make `company-backends' buffer local and reset it."
+  `(add-hook ',(intern (format "%S-hook" mode))
+             (lambda ()
+               (set (make-variable-buffer-local 'company-backends) nil))))

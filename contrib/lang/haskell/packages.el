@@ -13,17 +13,18 @@
 (defvar haskell-packages
   '(
     company-ghc
-    flycheck
     flycheck-haskell
     ghc
     haskell-mode
     hi2
+    hindent
     shm
     ))
 
-(defun haskell/init-flycheck ()
-  ;;(add-hook 'haskell-mode-hook 'flycheck-mode))
-  (add-hook 'flycheck-mode-hook 'flycheck-haskell-setup))
+(defun haskell/init-flycheck-haskell ()
+  (use-package flycheck-haskell
+    :defer t
+    :init (add-hook 'haskell-mode-hook 'flycheck-haskell-setup)))
 
 (defun haskell/init-shm ()
   (use-package shm
@@ -33,9 +34,54 @@
     (add-hook 'haskell-mode-hook 'structured-haskell-mode)
     :config
     (progn
+      (when (require 'shm-case-split nil 'noerror)
+        ;;TODO: Find some better bindings for case-splits
+        (define-key shm-map (kbd "C-c S") 'shm/case-split)
+        (define-key shm-map (kbd "C-c C-s") 'shm/do-case-split))
 
-      )))
+      (evil-define-key 'normal shm-map
+        (kbd "RET") nil
+        (kbd "C-k") nil
+        (kbd "C-j") nil
+        (kbd "D") 'shm/kill-line
+        (kbd "R") 'shm/raise
+        (kbd "P") 'shm/yank
+        (kbd "RET") 'shm/newline-indent
+        (kbd "RET") 'shm/newline-indent
+        (kbd "M-RET") 'evil-ret
+        )
 
+      (evil-define-key 'operator map
+        (kbd ")") 'shm/forward-node
+        (kbd "(") 'shm/backward-node
+        )
+
+      (evil-define-key 'motion map
+        (kbd ")") 'shm/forward-node
+        (kbd "(") 'shm/backward-node
+        )
+
+      (define-key shm-map (kbd "C-j") nil)
+      (define-key shm-map (kbd "C-k") nil)
+      )
+    )
+  )
+
+(defun haskell/init-hindent ()
+  (use-package hindent
+    :defer t
+    :if (stringp haskell-enable-hindent-style)
+    :init
+    (add-hook 'haskell-mode-hook #'hindent-mode)
+    :config
+    (progn
+      (setq hindent-style haskell-enable-hindent-style)
+      (evil-leader/set-key-for-mode 'haskell-mode
+        "mF"   'hindent/reformat-decl))))
+
+(defun haskell-process-do-type-on-prev-line ()
+  (interactive)
+  (haskell-process-do-type 1))
 
 (defun haskell/init-haskell-mode ()
   (require 'haskell-yas)
@@ -78,21 +124,13 @@
 
       ;;;;;;;;; Keybindings ;;;;;;;;;;
 
-      ;; ;; use "mc" as prefix for cabal commands
-      ;; (setq spacemacs/key-binding-prefixes '(("mc" . "cabal")))
-
-      ;; ;; use "ms" as prefix for REPL commands
-      ;; (setq spacemacs/key-binding-prefixes '(("ms" . "Haskell REPL")))
-
-      ;; ;; use "md" as prefix for debug commands
-      ;; (setq spacemacs/key-binding-prefixes '(("md" . "Haskell Debug")))
-
-      ;; ;; use "mh" as prefix for documentation commands
-      ;; (setq spacemacs/key-binding-prefixes '(("mh" . "Haskell Documentation")))
+      ;; major mode specfic prefixes not support for now
+      ;; (spacemacs/declare-prefix "mc" "cabal")
+      ;; (spacemacs/declare-prefix "ms" "repl")
+      ;; (spacemacs/declare-prefix "md" "debug")
+      ;; (spacemacs/declare-prefix "mh" "documentation")
 
       (evil-leader/set-key-for-mode 'haskell-mode
-        "mt"   'haskell-process-do-type
-        "mi"   'haskell-process-do-info
         "mgg"  'haskell-mode-jump-to-def-or-tag
         "mf"   'haskell-mode-stylish-buffer
 
@@ -106,9 +144,12 @@
         "mcc"  'haskell-compile
         "mcv"  'haskell-cabal-visit-file
 
-        "mhh"  'hoogle
-        "mhy"  'hayoo
         "mhd"  'inferior-haskell-find-haddock
+        "mhh"  'hoogle
+        "mhi"  'haskell-process-do-info
+        "mht"  'haskell-process-do-type
+        "mhT"  'haskell-process-do-type-on-prev-line
+        "mhy"  'hayoo
 
         "mdd"  'haskell-debug
         "mdb"  'haskell-debug/break-on-function
@@ -154,18 +195,7 @@
         (if (not haskell-enable-shm-support)
             (turn-on-haskell-indentation)
           )
-
-        ;; Indent the below lines on columns after the current column.
-        ;; Might need better bindings for spacemacs and OS X
-        (define-key haskell-mode-map (kbd "C-<right>")
-          (lambda ()
-            (interactive)
-            (haskell-move-nested 1)))
-        ;; Same as above but backwards.
-        (define-key haskell-mode-map (kbd "C-<left>")
-          (lambda ()
-            (interactive)
-            (haskell-move-nested -1))))
+        )
 
       ;; Useful to have these keybindings for .cabal files, too.
       (defun haskell-cabal-hook ()
@@ -192,10 +222,16 @@
 
 (defun haskell/init-company-ghc ()
   (use-package company-ghc
-    :if (configuration-layer/layer-declaredp 'company-mode)
+    :if (configuration-layer/package-declaredp 'company)
+    :defer t
     :init
     (progn
-      (add-to-list 'company-backends (company-mode/backend-with-yas 'company-ghc)))))
+      (spacemacs|reset-local-company-backends haskell-mode)
+      (defun spacemacs//ghc-company-backend ()
+        "Add GHC company backend."
+        (push (spacemacs/company-backend-with-yas 'company-ghc)
+              company-backends))
+      (add-hook 'haskell-mode-hook 'spacemacs//ghc-company-backend t))))
 
 (defun haskell/init-hi2 ()
   (use-package hi2

@@ -14,17 +14,15 @@
         - [Optional extras](#optional-extras)
             - [GHCi-ng support](#ghci-ng-support)
             - [structured-haskell-mode](#structured-haskell-mode)
+            - [hindent](#hindent)
     - [Key bindings](#key-bindings)
-        - [Haskell source code:](#haskell-source-code)
-            - [Haskell commands:](#haskell-commands)
-            - [Documentation commands:](#documentation-commands)
-            - [Cabal commands:](#cabal-commands)
-            - [Debug commands:](#debug-commands)
-            - [REPL commands:](#repl-commands)
-        - [Cabal files:](#cabal-files)
+        - [-](#-)
+        - [Debug](#debug)
+        - [REPL](#repl)
+        - [Cabal commands](#cabal-commands)
+        - [Cabal files](#cabal-files)
 
 <!-- markdown-toc end -->
-
 
 ## Description
 
@@ -88,19 +86,23 @@ Note that `emacs.app` for OS X does not pick up `$PATH` from `~/.bashrc` or
 `~/.zshrc` when launched from outside a terminal.
 
 ### Optional extras
-The Haskell layer supports some extra features that can be enabled through layer variables.
+The Haskell layer supports some extra features that can be enabled through
+layer variables.
 
 #### GHCi-ng support
-[ghci-ng][] adds some nice features to `haskell-mode`, and is supported in Spacemacs by a layer variable:
+[ghci-ng][] adds some nice features to `haskell-mode`, and is supported in
+Spacemacs by a layer variable:
 
-Follow the instructions to install [ghci-ng][] (remember to add `:set +c` in `~/.ghci`,
-next set the layer variable:
+Follow the instructions to install [ghci-ng][] (remember to add `:set +c`
+in `~/.ghci`, next set the layer variable:
+
 ```elisp
-;; List of configuration layers to load.
-dotspacemacs-configuration-layers '(company-mode (haskell :variables haskell-enable-ghci-ng-support t) git)
+(setq-default dotspacemacs-configuration-layers
+  '((haskell :variables haskell-enable-ghci-ng-support t)))
 ```
 
-Once ghci-ng is enabled, two of the old keybindings are overriden with improved versions from ghci-ng, and a new keybinding available: 
+Once ghci-ng is enabled, two of the old keybindings are overriden with improved
+versions from ghci-ng, and a new keybinding available: 
 
     Key Binding       |                 Description
 ----------------------|------------------------------------------------------------
@@ -109,50 +111,75 @@ Once ghci-ng is enabled, two of the old keybindings are overriden with improved 
 <kbd>SPC m u</kbd>    | finds uses of identifier
 
 #### structured-haskell-mode
-[structured-haskell-mode][], or shm, replaces hi2 and adds some nice functionality.
-To enable shm, run `cabal install structured-haskell-mode` and set the layer variable:
+[structured-haskell-mode][], or shm, replaces hi2 (and any other
+Haskell-indentation modes) and adds some nice functionality.
+To enable shm, run `cabal install structured-haskell-mode` and set the layer
+variable:
+
 ```elisp
-;; List of configuration layers to load.
-dotspacemacs-configuration-layers '(company-mode (haskell :variables haskell-enable-shm-support t) git)
+(setq-default dotspacemacs-configuration-layers
+  '((haskell :variables haskell-enable-shm-support t)))
+```
+
+After shm has been enabled, some of the evil normal state bindings are overridden:
+
+    Key Binding       |                 Description
+----------------------|------------------------------------------------------------
+<kbd>D</kbd>          | `shm/kill-line`
+<kbd>R</kbd>          | `shm/raise`
+<kbd>P</kbd>          | `shm/yank`
+<kbd>(</kbd>          | `shm/forward-node`
+<kbd>)</kbd>          | `shm/backward-node`
+
+For a nice visualization of these functions, please refer to the github page
+for [structured-haskell-mode][].
+
+#### hindent
+[hindent][] is an extensible Haskell pretty printer, which let's you
+reformat your code. You need to install the executable with `cabal
+install hindent`.
+
+To enable it you have to set the variable `haskell-enable-hindent-support`
+to a supported style. The available styles are:
+- fundamental
+- johan-tibell
+- chris-done
+- andrew-gibiansky
+
+See examples [here][hindent-examples]
+
+```elisp
+(setq-default dotspacemacs-configuration-layers
+  '((haskell :variables haskell-enable-hindent-support "johan-tibell")))
 ```
 
 ## Key bindings
 
-All Haskell specific bindings are prefixed with <kbd>SPC m</kbd>
+All Haskell specific bindings are prefixed with the major-mode leader
+<kbd>SPC m</kbd>.
 
-### Haskell source code:
-
-#### Haskell commands:
 Top-level commands are prefixed by <kbd>SPC m</kbd>:
 
     Key Binding       |                 Description
 ----------------------|------------------------------------------------------------
-<kbd>SPC m t</kbd>    | gets the type of the identifier under the cursor
-<kbd>SPC m i</kbd>    | gets information for the identifier under the cursor
 <kbd>SPC m g g</kbd>  | go to definition or tag
 <kbd>SPC m f</kbd>    | format buffer using haskell-stylish
+<kbd>SPC m F</kbd>    | format declaration using hindent (if enabled)
 
-#### Documentation commands:
+### Documentation
+
 Documentation commands are prefixed by <kbd>SPC m h</kbd>
 
     Key Binding       |                 Description
 ----------------------|------------------------------------------------------------
 <kbd>SPC m h d</kbd>  | find or generate Haddock documentation for the identifier under the cursor
 <kbd>SPC m h h</kbd>  | do a Hoogle lookup
+<kbd>SPC m h i</kbd>  | gets information for the identifier under the cursor
+<kbd>SPC m h t</kbd>  | gets the type of the identifier under the cursor
 <kbd>SPC m h y</kbd>  | do a Hayoo lookup
 
+### Debug
 
-#### Cabal commands:
-Cabal commands are prefixed by <kbd>SPC m c</kbd>:
-
-    Key Binding       |                 Description
-----------------------|------------------------------------------------------------
-<kbd>SPC m c a</kbd>  | cabal actions
-<kbd>SPC m c b</kbd>  | build the current cabal project, i.e. invoke `cabal build`
-<kbd>SPC m c c</kbd>  | compile the current project, i.e. invoke `ghc`
-<kbd>SPC m c v</kbd>  | visit the cabal file
-
-#### Debug commands:
 Debug commands are prefixed by <kbd>SPC m d</kbd>:
 
     Key Binding       |                 Description
@@ -166,7 +193,8 @@ Debug commands are prefixed by <kbd>SPC m d</kbd>:
 <kbd>SPC m d a </kbd> | abandon current process
 <kbd>SPC m d r </kbd> | refresh process buffer
 
-#### REPL commands:
+### REPL
+
 REPL commands are prefixed by <kbd>SPC m s</kbd>:
 
     Key Binding       |                 Description
@@ -176,7 +204,20 @@ REPL commands are prefixed by <kbd>SPC m s</kbd>:
 <kbd>SPC m s s</kbd>  | show the REPL
 <kbd>SPC m s S</kbd>  | show and switch to the REPL
 
-### Cabal files:
+### Cabal commands
+
+Cabal commands are prefixed by <kbd>SPC m c</kbd>:
+
+    Key Binding       |                 Description
+----------------------|------------------------------------------------------------
+<kbd>SPC m c a</kbd>  | cabal actions
+<kbd>SPC m c b</kbd>  | build the current cabal project, i.e. invoke `cabal build`
+<kbd>SPC m c c</kbd>  | compile the current project, i.e. invoke `ghc`
+<kbd>SPC m c v</kbd>  | visit the cabal file
+
+### Cabal files
+
+This commands are available in a cabal file.
 
     Key Binding       |                 Description
 ----------------------|------------------------------------------------------------
@@ -198,3 +239,5 @@ REPL commands are prefixed by <kbd>SPC m s</kbd>:
 [hi2]: https://github.com/nilcons/hi2
 [ghci-ng]: https://github.com/chrisdone/ghci-ng
 [structured-haskell-mode]: https://github.com/chrisdone/structured-haskell-mode
+[hindent]: https://github.com/chrisdone/hindent
+[hindent-examples]: https://github.com/chrisdone/hindent#example

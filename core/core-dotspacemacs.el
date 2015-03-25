@@ -17,11 +17,16 @@
   "List of additional paths where to look for configuration layers.
 Paths must have a trailing slash (ie. `~/.mycontribs/')")
 
-(defvar dotspacemacs-startup-banner 'random
-  "Specify the startup banner. If the value is an integer then the
-banner with the corresponding index is used, if the value is `random'
-then the banner is chosen randomly among the available banners, if
-the value is nil then no banner is displayed.")
+(defvar dotspacemacs-editing-style 'vim
+  "Either `vim' or `emacs'. Evil is always enabled but if the variable
+is `emacs' then the `holy-mode' is enabled at startup.")
+
+(defvar dotspacemacs-startup-banner 'official
+   "Specify the startup banner. Default value is `official', it displays
+the official spacemacs logo. An integer value is the index of text
+banner, `random' chooses a random text banner in `core/banners'
+directory. A string value must be a path to a .PNG file.
+If the value is nil then no banner is displayed.")
 
 (defvar dotspacemacs-configuration-layers '()
   "List of configuration layers to load. If it is the symbol `all' instead
@@ -42,9 +47,15 @@ with 2 themes variants, one dark and one light")
 (defvar dotspacemacs-leader-key "SPC"
   "The leader key.")
 
+(defvar dotspacemacs-emacs-leader-key "M-m"
+  "The leader key accessible in `emacs state' and `insert state'")
+
 (defvar dotspacemacs-major-mode-leader-key ","
   "Major mode leader key is a shortcut key which is the equivalent of
-pressing `<leader> m`")
+pressing `<leader> m`. Set it to `nil` to disable it.")
+
+(defvar dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+  "Major mode leader key accessible in `emacs state' and `insert state'")
 
 (defvar dotspacemacs-default-font '("Source Code Pro"
                                     :size 13
@@ -59,6 +70,10 @@ size to make separators look not too crappy.")
 By default the command key is `:' so ex-commands are executed like in Vim
 with `:' and Emacs commands are executed with `<leader> :'.")
 
+(defvar dotspacemacs-enable-paste-micro-state t
+  "If non nil the paste micro-state is enabled. While enabled pressing `p`
+several times cycle between the kill ring content.'")
+
 (defvar dotspacemacs-guide-key-delay 0.4
   "Guide-key delay in seconds.")
 
@@ -66,9 +81,6 @@ with `:' and Emacs commands are executed with `<leader> :'.")
   "If non nil a progress bar is displayed when spacemacs is loading. This
 may increase the boot time on some systems and emacs builds, set it to nil
 to boost the loading time.")
-
-(defvar dotspacemacs-helm-micro-state t
-  "Enable micro-state for helm buffer when pressing on TAB.")
 
 (defvar dotspacemacs-fullscreen-at-startup nil
   "If non nil the frame is fullscreen when Emacs starts up (Emacs 24.4+ only).")
@@ -118,6 +130,49 @@ NOT USED FOR NOW :-)")
 (defvar dotspacemacs-excluded-packages '()
   "A list of packages and/or extensions that will not be install and loaded.")
 
+(defvar dotspacemacs-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map emacs-lisp-mode-map)
+    (define-key map (kbd "C-c C-c") 'dotspacemacs/sync-configuration-layers)
+    map)
+  "Keymap for dostpacemacs-mode.")
+
+(define-derived-mode dotspacemacs-mode emacs-lisp-mode "dotspacemacs"
+  "dotspacemacs major mode for Spacemacs dotfile.
+
+\\{dotspacemacs-mode-map}"
+  :group 'spacemacs
+  ;; first import evil-leader keymap for emacs-lisp-mode
+  (let ((mode-map (cdr (assoc 'dotspacemacs-mode evil-leader--mode-maps))))
+    (unless mode-map
+      (push (cons 'dotspacemacs-mode
+                  (cdr (assoc 'emacs-lisp-mode evil-leader--mode-maps)))
+            evil-leader--mode-maps)))
+  ;; then define additional leader key bindings
+  (evil-leader/set-key-for-mode 'dotspacemacs-mode
+    "mcc" 'dotspacemacs/sync-configuration-layers)
+  (run-at-time
+   "1 sec" nil
+   (lambda () (message "SPC m c c (or C-c C-c) to apply your changes."))))
+
+(defun dotspacemacs/sync-configuration-layers (arg)
+  "Synchronize declared layers in dotfile with spacemacs.
+
+If ARG is non nil then `dotspacemacs/config' is skipped."
+  (interactive "P")
+  (let ((dotspacemacs-loading-progress-bar nil))
+    (setq spacemacs-loading-string "")
+    (save-buffer)
+    (load-file buffer-file-name)
+    (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
+    (configuration-layer/sync)
+    (if arg
+        (message "Done (`dotspacemacs/config' function has been skipped).")
+      (dotspacemacs|call-func dotspacemacs/config "Calling dotfile config...")
+      (message "Done."))
+    (when (configuration-layer/package-declaredp 'powerline)
+      (spacemacs//restore-powerline (current-buffer)))))
+
 (defun dotspacemacs/location ()
   "Return the absolute path to the spacemacs dotfile."
   (concat user-home-directory ".spacemacs"))
@@ -127,16 +182,17 @@ NOT USED FOR NOW :-)")
 before installing the file if the destination already exists."
   (interactive)
   (let* ((dotfile "~/.spacemacs")
-         (install (if (file-exists-p dotfile)
-                      (y-or-n-p (format "%s already exists. Do you want to overwite it ? "
-                                        dotfile))
-                    t)))
+         (install
+          (if (file-exists-p dotfile)
+              (y-or-n-p
+               (format "%s already exists. Do you want to overwite it ? "
+                       dotfile)) t)))
     (when install
       (copy-file (concat dotspacemacs-template-directory
                          ".spacemacs.template") dotfile t)
       (message "%s has been installed." dotfile))))
 
-(defun dotspacemacs/load ()
+(defun dotspacemacs/load-file ()
   "Load ~/.spacemacs if it exists."
   (let ((dotspacemacs (dotspacemacs/location)))
     (if (file-exists-p dotspacemacs) (load dotspacemacs))))

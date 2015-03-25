@@ -17,8 +17,26 @@
 This layer adds configuration for C/C++ language as well support for [CMake][]
 scripts.
 
-**This layer is not adapted for Spacemacs, it needs you, C/C++ experts, to
+## Features
+
+- Support syntax checking with Clang.
+- Display function or variable definition at the bottom.
+- Display current function cursor is in at the top. See [this page][stickyfunc-demos]
+for demos in some programming languages.
+- Support common refactoring with [semantic-refactor][]. See [this page][srefactor-demos]
+for demonstration of refactoring features.
+
+**This layer is not fully adapted for Spacemacs, it needs you, C/C++ experts, to
 improve it and make it consistent with the Spacemacs experience.**
+
+## Key Bindings
+
+    Key Binding       |                 Description
+----------------------|------------------------------------------------------------
+<kbd>SPC m g o</kbd>  | open matching file (e.g. switch between .cpp and .h)
+<kbd>SPC m g O</kbd>  | open matching file in another window (e.g. switch between .cpp and .h)
+<kbd>SPC m r</kbd>    | srefactor: refactor thing at point.
+
 
 ## Install
 
@@ -28,4 +46,9 @@ To use this contribution add it to your `~/.spacemacs`
 (setq-default dotspacemacs-configuration-layers '(c-c++))
 ```
 
+** Note: ** [semantic-refactor][] is only available for Emacs 24.4+
+
 [CMake]: http://www.cmake.org/
+[semantic-refactor]: https://github.com/tuhdo/semantic-refactor
+[srefactor-demos]: https://github.com/tuhdo/semantic-refactor/blob/master/srefactor-demos/demos.org
+[stickyfunc-demos]: https://github.com/tuhdo/semantic-stickyfunc-enhance

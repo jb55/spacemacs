@@ -31,6 +31,7 @@
         - [Using a personal branch](#using-a-personal-branch)
 - [Dotfile Configuration](#dotfile-configuration)
     - [Installation](#installation)
+    - [Synchronization of dotfile changes](#synchronization-of-dotfile-changes)
     - [Content](#content)
         - [Using configuration layers](#using-configuration-layers)
         - [Setting configuration layers variables](#setting-configuration-layers-variables)
@@ -102,6 +103,7 @@
         - [Listing symbols by semantic](#listing-symbols-by-semantic)
         - [Helm-swoop](#helm-swoop)
     - [Editing](#editing)
+        - [Paste text](#paste-text)
         - [Text manipulation commands](#text-manipulation-commands)
         - [Smartparens Strict mode](#smartparens-strict-mode)
         - [Zooming](#zooming)
@@ -127,7 +129,7 @@
             - [Lisp Key Bindings](#lisp-key-bindings)
                 - [Lisp state key bindings](#lisp-state-key-bindings)
                 - [Emacs lisp specific key bindings](#emacs-lisp-specific-key-bindings)
-        - [Managing projects](#managing-projects)
+    - [Managing projects](#managing-projects)
     - [Registers](#registers)
     - [Errors handling](#errors-handling)
     - [Compiling](#compiling)
@@ -137,7 +139,6 @@
         - [Org](#org)
         - [Python](#python)
         - [JavaScript](#javascript)
-        - [rcirc](#rcirc)
         - [HTML and CSS](#html-and-css)
 - [Emacs Server](#emacs-server)
     - [Connecting to the Emacs server](#connecting-to-the-emacs-server)
@@ -211,7 +212,7 @@ dotfile. It is even possible to exclude _any_ unwanted packages.
 **keep your fingers on the home row** as much as possible, no matter the mode
 you are in.
 
-- **Crowed-configured**: Contribute easily your improvements and new
+- **Crowd-configured**: Contribute easily your improvements and new
 configuration layers.
 
 - **Minimalistic and nice graphical UI**, keep your available screen space for
@@ -399,7 +400,7 @@ you can find it [here][themes-megapack].
 To install it, just add `themes-megapack` to your `~/.spacemacs` like so:
 
 ```elisp
-dotspacemacs-configuration-layers '(themes-megapack)
+(setq-default dotspacemacs-configuration-layers '(themes-megapack))
 ```
 
 You have now installed around 100 themes you are free to try with <kbd>SPC T h</kbd>
@@ -448,6 +449,20 @@ manually from the template file `~/.emacs.d/core/templates/.spacemacs.template`
 ```sh
 $ cp ~/.emacs.d/core/templates/.spacemacs.template ~/.spacemacs
 ```
+
+## Synchronization of dotfile changes
+
+To apply the modifications made in `~/.spacemacs` press <kbd>SPC m c c</kbd>.
+It will re-execute the `Spacemacs` initialization process.
+
+**Note:** A synchronization re-execute the functions `dotspacemacs/init` and
+`dotspacemacs/config`. Depending on the content of this functions you may
+encounter some unwanted side effects. For instance if you use a toggle in
+`dotspacemac/config` to enable some behavior, this behavior will be turned off
+whenever the dotfile is re-synchronize. To avoid these side-effects it is
+recommended to use `setq` expressions instead of toggle functions.
+It is also possible to _skip_ the execution of `dotspacemacs/config` with the
+universal argument (<kbd>SPC u SPC m c c</kbd>).
 
 ## Content
 
@@ -530,7 +545,7 @@ than just a Vim emulation. It has more states than Vim for instance.
 
 ### States
 
-`Spacemacs` has 8 states:
+`Spacemacs` has 9 states:
 
 - **Normal** (orange) - like the `normal mode of Vim`, used to execute and
                         combine commands
@@ -542,6 +557,9 @@ than just a Vim emulation. It has more states than Vim for instance.
                         buffers
 - **Emacs** (blue) - exclusive to `Evil`, using this state is like using a
                      regular Emacs without Vim
+- **Evilified** (yellow) - exclusive to `Spacemacs`, this is an `emacs state`
+                           modified to bring Vim navigation, selection and
+                           search.
 - **Lisp** (pink) - exclusive to `Spacemacs`, used to navigate Lisp code and
                     modify it (see [Editing Lisp code](#editing-lisp-code))
 - **Iedit** (red) - exclusive to `Spacemacs`, used to navigate between multiple
@@ -598,9 +616,9 @@ Additional information may as well be displayed in the minibuffer.
 
 # Differences between Vim, Evil and Spacemacs
 
-No doubt that `Evil` is one of the most advanced `Vim` emulation and you should
-not see big difference between `Vim` and `Emacs`. I did not find any command I
-used in Vim that I missed in Emacs with `Evil`.
+- The `,` key does "repeat last `f`, `t`, `F`, or `T` command in opposite
+direction in `Vim`, but in `Spacemacs` it the major mode specific leader
+key by default (which can be set on another key binding in the dotfile).
 
 Send a PR to add the differences you found in this section.
 
@@ -741,12 +759,12 @@ units of 1/10 point.
   - reverse-italic
   - reverse-oblique
 - `:size` The font size—either a non-negative integer that specifies the pixel
-size, or a floating-point number that specifies the point size. 
+size, or a floating-point number that specifies the point size.
 - `:adstyle` Additional typographic style information for the font, such as
 ‘sans’. The value should be a string or a symbol.
 - `:registry` The charset registry and encoding of the font, such as
-‘iso8859-1’. The value should be a string or a symbol. 
-- `:script` The script that the font must support (a symbol). 
+‘iso8859-1’. The value should be a string or a symbol.
+- `:script` The script that the font must support (a symbol).
 
 The special property `:powerline-scale` is `Spacemacs` specific and it is for
 quick tweaking of the mode-line height in order to avoid crappy rendering of
@@ -762,7 +780,7 @@ Some graphical UI indicators can be toggled on and off (toggles start with `t`):
 
     Key Binding       |                 Description
 ----------------------|------------------------------------------------------------
-<kbd>SPC t 8</kbd>    | display a mark on the 80th column
+<kbd>SPC t c</kbd>    | display the fill column (by default the fill column is set to 80)
 <kbd>SPC t F</kbd>    | toggle frame fullscreen
 <kbd>SPC t f</kbd>    | toggle display of the fringe
 <kbd>SPC t h</kbd>    | toggle highlight of the current line
@@ -805,9 +823,12 @@ Some elements can be dynamically toggled:
 
     Key Binding        |                 Description
 -----------------------|------------------------------------------------------------
-<kbd>SPC t m m</kbd>   | toggle the minor mode lighters
 <kbd>SPC t m b</kbd>   | toggle the battery status
+<kbd>SPC t m c</kbd>   | toggle the `org` task clock
 <kbd>SPC t m f</kbd>   | toggle the flycheck info
+<kbd>SPC t m m</kbd>   | toggle the minor mode lighters
+<kbd>SPC t m n</kbd>   | toggle the cat! (if `colors` layer is declared in your dotfile)
+<kbd>SPC t m p</kbd>   | toggle the point character position
 <kbd>SPC t m v</kbd>   | toggle the new version lighter
 
 #### Flycheck integration
@@ -897,6 +918,7 @@ display ASCII characters instead (may be useful in terminal).
 `Ⓒ`          | C          | [centered-cursor][centered-cursor] mode
 `Ⓔ`          | E          | [evil-org][evil-org-mode] mode
 `Ⓕ`          | F          | flycheck mode
+`ⓕ`          | f          | auto-fill mode
 `Ⓚ`          | K          | guide-key mode
 `Ⓘ`          | I          | aggressive indent mode
 `(Ⓟ)`        | (P)        | paredit mode
@@ -946,6 +968,9 @@ to `jj` (it is important set the variable in `dotspacemacs/init`):
 sequences are not optimal for `Spacemacs`. Indeed it is very easy in
 `visual state` to press quickly `jj` and inadvertently escape to `normal state`.
 
+**Important Note** One caveat of `evil-escape` is that you must not use it
+while recording macros. Use `escape` key instead.
+
 ### Executing Vim and Emacs ex/M-x commands
 
     Command      |                 Key Binding
@@ -971,6 +996,11 @@ It is possible to change this key with the variable `dotspacemacs-leader-key`.
 `<SPC> o` is **guaranteed** to never conflict with `Spacemacs` defaults key
 bindings.
 
+**Example:**
+Put `(evil-leader/set-key "oc" 'org-capture)` inside `dotspacemacs/config`
+in your `~/.spacemacs` file, to be able to use <kbd>SPC o c</kbd> to run
+org mode capture.
+
 ## Helm
 
 `Spacemacs` is powered by [Helm][helm-link] which is an incremental completion
@@ -985,7 +1015,7 @@ to read the [Helm documentation wiki][helm-doc].
 ### Helm micro-state
 
 `Spacemacs` defines a [micro-state](#micro-states) for `Helm` to make it
-work like [Vim's Unit][] plugin.
+work like [Vim's Unite][] plugin.
 
 Initiate the micro-state with <kbd>C-SPC</kbd> while in a `Helm` buffer.
 Use <kbd>C-SPC</kbd> again to exit from the micro-state.
@@ -1174,9 +1204,10 @@ Windows manipulation commands (start with `w`):
 
 Key Binding                               |                 Description
 ------------------------------------------|----------------------------------------------------------------
+<kbd>SPC w =</kbd>                        | balance split windows
 <kbd>SPC w b</kbd>                        | force the focus back to the minibuffer (usefull with `helm` popups)
 <kbd>SPC w c</kbd>                        | close a window
-<kbd>SPC w C</kbd>                        | close other windows
+<kbd>SPC w C</kbd>                        | delete another window using [ace-delete-window][ace-window]
 <kbd>SPC w d</kbd>                        | toggle window dedication (dedicated window cannot be reused by a mode)
 <kbd>SPC w h</kbd>                        | move to window on the left
 <kbd>SPC w H</kbd>                        | move window to the left
@@ -1186,7 +1217,7 @@ Key Binding                               |                 Description
 <kbd>SPC w K</kbd>                        | move window to the top
 <kbd>SPC w l</kbd>                        | move to window on the right
 <kbd>SPC w L</kbd>                        | move window to the right
-<kbd>SPC w m</kbd>                        | maximize/minimize a window
+<kbd>SPC w m</kbd>                        | maximize/minimize a window (maximize is equivalent to delete otehr windows)
 <kbd>SPC w M</kbd>                        | maximize/minimize a window, when maximized the buffer is centered
 <kbd>SPC w o</kbd>                        | cycle and focus between frames
 <kbd>SPC w p m</kbd>                      | open messages buffer in a popup window
@@ -1199,6 +1230,7 @@ Key Binding                               |                 Description
 <kbd>SPC w v</kbd> or  <kbd>SPC w -</kbd> | vertical split
 <kbd>SPC w V</kbd>                        | vertical split and focus new window
 <kbd>SPC w w</kbd>                        | cycle and focus between windows
+<kbd>SPC w W</kbd>                        | select window using [ace-window][ace-window]
 
 #### Window manipulation micro-state
 
@@ -1281,6 +1313,7 @@ Key Binding                               |              Description
 <kbd>SPC b m j</kbd>                      | move a buffer to the bottom
 <kbd>SPC b m k</kbd>                      | move a buffer to the top
 <kbd>SPC b m l</kbd>                      | move a buffer to the right
+<kbd>SPC b M</kbd>                        | swap windows using [ace-swap-window][ace-window]
 <kbd>SPC b n</kbd>                        | switch to next buffer
 <kbd>SPC b p</kbd>                        | switch to previous buffer
 <kbd>SPC b r</kbd>                        | rename the current buffer
@@ -1331,16 +1364,20 @@ Key Binding             |                 Description
 <kbd>C-d</kbd>          | delete selected file (ask for confirmation)
 <kbd>C-h</kbd>          | go to parent directory
 <kbd>C-j</kbd>          | select next file or directory
-<kbd>C-S-j</kbd>        | go to next directory
 <kbd>C-k</kbd>          | select previous file or directory
-<kbd>C-S-k</kbd>        | go to previous directory
 <kbd>C-l</kbd>          | open the selected file
-<kbd>C-n</kbd>          | next history element
+<kbd>C-n</kbd>          | select next file or directory
 <kbd>C-o</kbd>          | open selected file in other window
-<kbd>C-p</kbd>          | previous history element
+<kbd>C-p</kbd>          | select previous file or directory
 <kbd>C-s</kbd>          | open selected file in a vertically split window
 <kbd>C-t</kbd>          | open selected file in a new frame
 <kbd>C-v</kbd>          | open selected file in a horizontally split window
+<kbd>C-S-h</kbd>        | go to previous directory
+<kbd>C-S-j</kbd>        | next history element
+<kbd>C-S-k</kbd>        | previous history element
+<kbd>C-S-l</kbd>        | go to next directory
+<kbd>C-S-n</kbd         | next history element
+<kbd>C-S-p</kbd         | previous history element
 
 ### Ido micro-state
 
@@ -1487,6 +1524,7 @@ Key Binding        |                 Description
 <kbd>-</kbd>       | shrink
 <kbd>gg</kbd>      | go to first page
 <kbd>G</kbd>       | go to last page
+<kbd>gt</kbd>      | go to page number
 <kbd>h</kbd>       | previous page
 <kbd>H</kbd>       | adjust to height
 <kbd>j</kbd>       | next line
@@ -1628,6 +1666,26 @@ Key Binding            |                    Description
 <kbd>SPC s C-s</kbd>   | execute `helm-multi-swoop-all`
 
 ## Editing
+
+### Paste text
+
+Whenever you paste some text a `paste` micro-state is initiated. Pressing
+<kbd>p</kbd> again will replace the pasted text with the previous
+yanked (copied) text on the kill ring.
+
+For example if you copy `foo` and `bar` then press <kbd>p</kbd> the text `bar`
+will be pasted, pressing <kbd>p</kbd> again will replace `bar` with `foo`.
+
+Key Binding                   |                    Description
+------------------------------|----------------------------------------------------------------
+<kbd>p</kbd> or <kbd>P</kbd>  | paste the text before or after point and initiate the `paste` micro-state
+<kbd>p</kbd>                  | in micro-state: replace paste text with the previously copied one
+<kbd>P</kbd>                  | in micro-state: replace paste text with the next copied one
+<kbd>.</kbd>                  | paste the same text and leave the micro-state
+Any other key                 | leave the micro-state
+
+This micro-state can be disabled by setting
+`dotspacemacs-enable-paste-micro-state` to `nil` in `~/.spacemacs`.
 
 ### Text manipulation commands
 
@@ -1995,12 +2053,16 @@ Key Binding          | Function
 <kbd>SPC m e $</kbd> | go to end of line and evaluate last sexp
 <kbd>SPC m e e</kbd> | evaluate last sexp
 <kbd>SPC m e f</kbd> | evaluate current defun
+<kbd>SPC m e l</kbd> | go to end of line and evaluate last sexp
+
+Key Binding          | Function
+---------------------|------------------------------------------------------------
 <kbd>SPC m g g</kbd> | go to definition
 <kbd>SPC m h h</kbd> | describe elisp thing at point (show documentation)
 <kbd>SPC m t b</kbd> | execute buffer tests
 <kbd>SPC m t q</kbd> | ask for test function to execute
 
-### Managing projects
+## Managing projects
 
 Projects in `Spacemacs` are managed with [projectile][projectile]. In
 `projectile` projects are defined implicitly, for instance the root of a
@@ -2028,7 +2090,6 @@ To search in a project see [project searching](#project-searching).
 <kbd>SPC p g</kbd>  | run `grep`
 <kbd>SPC p h</kbd>  | find file using `helm`
 <kbd>SPC p I</kbd>  | invalidate the projectile cache
-<kbd>SPC p j</kbd>  | find a tag
 <kbd>SPC p k</kbd>  | kill all project buffers
 <kbd>SPC p o</kbd>  | run `multi-occur`
 <kbd>SPC p R</kbd>  | regenerate the project's [e|g]tags
@@ -2157,25 +2218,19 @@ In `org`, [evil-org-mode][] is activated.
 
 ### Python
 
-Writing python code with spacemacs is supported by python contribution. Please see
-[python contribution][python-contrib] documentation for detail.
+Writing python code with spacemacs is supported by python contribution. Please
+see [python contribution][python-contrib] documentation for detail.
 
 ### JavaScript
 
-More featured JavaScript support is provided by the javascript contribution. Please see
-[javascript contribution][javascript-contrib] documentation for detail.
-
-### rcirc
-
-    Key Binding   |                 Description
-------------------|------------------------------------------------------------
-<kbd>CTRL+j</kbd> | next item in command history
-<kbd>CTRL+k</kbd> | previous item in command history
+More featured JavaScript support is provided by the javascript
+contribution. Please see [javascript contribution][javascript-contrib]
+documentation for detail.
 
 ### HTML and CSS
 
-HTML contribution provides support for editing HTML, CSS, Scss and Less files. Please see
-[html contribution][html-contrib] documentation for detail.
+HTML contribution provides support for editing HTML, CSS, Scss and Less
+files. Please see [html contribution][html-contrib] documentation for detail.
 
 # Emacs Server
 
@@ -2184,7 +2239,21 @@ your Emacs windows.
 
 ## Connecting to the Emacs server
 
-TODO
+You can open a file in Emacs from the terminal using `emacsclient`. Use
+`emacsclient -c` to open the file in Emacs GUI. Use `emacsclient -t` to open
+the file in Emacs within the terminal.
+
+If you want your Linux/OS X system to use Emacs by default for any prompt, use
+`export EDITOR="emacsclient -c"` in your shell configuration.
+
+Note that if you're on OS X, you may have to refer to the emacsclient that comes
+with your GUI Emacs, e.g. `export
+EDITOR="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -c"`.
+
+Tip: Remember to use `:qw` or `C-x #` after you are done editing the file
+in Emacs.
+
+See [Emacs as a Server][] in the official Emacs manual for more details.
 
 ## Keeping the server alive
 
@@ -2209,15 +2278,10 @@ server is to use the following bindings:
 
 ### Loading fails
 
-If during the first boot of Emacs nothing seems to happen or if the
-installation seems to abort prematurely, you can check for an error message
-by opening the `*Warning*` buffer:
-
-    C-x b warning RET
-
-_('C-x b' means 'Ctrl + x then b' and 'RET' means 'return')_
-
-Then you can copy/paste the error in a [Github issue][issues], thank you.
+If any errors happen during the loading the mode-line will turn red and the
+errors should appear inline in the startup buffer. Spacemacs should still be
+usable, if it is not the case then restart Emacs with `emacs --debug-init` and
+open a [Github issue][issues] with the backtrace.
 
 ### I have no file ~/.spacemacs
 
@@ -2250,9 +2314,12 @@ Achievements                                         | Account
 [400th issue (PR)][400th-issue]                      | [CestDiego][]
 [500th issue (PR)][500th-issue]                      | [bjarkevad][]
 [600th issue (PR)][600th-issue]                      | [bjarkevad][]
+[700th issue (enhancement)][700th-issue]             | [jcpetkovich][]
+[800th issue (PR)][800th-issue]                      | [ryansroberts][]
 [100th pull request][100th-PR]                       | [bru][]
 [200th pull request][200th-PR]                       | [smt][]
 [300th pull request][300th-PR]                       | [BrianHicks][]
+[400th pull request][400th-PR]                       | [cpaulik][]
 PR gunner (8 PRs in a row)                           | [ralesi][]
 100th fork                                           | [balajisivaraman][]
 100th star                                           | [Jackneill][]
@@ -2260,6 +2327,7 @@ PR gunner (8 PRs in a row)                           | [ralesi][]
 400th star                                           | [dbohdan][]
 600th star                                           | [laat][]
 700th star                                           | [kendall][]
+800th star                                           | [urso][]
 
 # Thank you
 
@@ -2278,6 +2346,7 @@ developers to elisp hackers!
 [keychords]: http://www.emacswiki.org/emacs/KeyChord
 [centered-cursor]: http://www.emacswiki.org/emacs/centered-cursor-mode.el
 [ace-jump]: https://github.com/winterTTr/ace-jump-mode
+[ace-window]: https://github.com/abo-abo/ace-window
 [helm-link]: https://github.com/emacs-helm/helm
 [helm-doc]: https://github.com/emacs-helm/helm/wiki
 [popwin]: http://www.emacswiki.org/emacs/PopWin
@@ -2323,7 +2392,7 @@ developers to elisp hackers!
 [evil-numbers]: https://github.com/cofi/evil-numbers
 [evil-org-mode]: https://github.com/edwtjo/evil-org-mode
 [evil-lisp-state]: https://github.com/syl20bnr/evil-lisp-state
-[Vim's Unit]: https://github.com/Shougo/unite.vim
+[Vim's Unite]: https://github.com/Shougo/unite.vim
 [git-gutter]: https://github.com/syohex/emacs-git-gutter-fringe
 [nose]: https://github.com/nose-devs/nose/
 [nose.el]: https://github.com/syl20bnr/nose.el
@@ -2360,18 +2429,27 @@ developers to elisp hackers!
 [400th-issue]: https://github.com/syl20bnr/spacemacs/pull/400
 [500th-issue]: https://github.com/syl20bnr/spacemacs/pull/500
 [600th-issue]: https://github.com/syl20bnr/spacemacs/pull/600
+[700th-issue]: https://github.com/syl20bnr/spacemacs/pull/700
+[800th-issue]: https://github.com/syl20bnr/spacemacs/pull/800
 [100th-PR]: https://github.com/syl20bnr/spacemacs/pull/228
 [200th-PR]: https://github.com/syl20bnr/spacemacs/pull/418
 [300th-PR]: https://github.com/syl20bnr/spacemacs/pull/617
+[400th-PR]: https://github.com/syl20bnr/spacemacs/pull/806
 [trishume]:https://github.com/trishume
 [Wolfy87]:https://github.com/Wolfy87
 [danielwuz]:https://github.com/danielwuz
 [CestDiego]:https://github.com/CestDiego
 [bjarkevad]:https://github.com/bjarkevad
+[jcpetkovich]:https://github.com/jcpetkovich
+[BrianHicks]:https://github.com/BrianHicks
+[cpaulik]: https://github.com/cpaulik
 [chrisbarrett]:https://github.com/chrisbarrett
 [justrajdeep]:https://github.com/justrajdeep
 [dbohdan]:https://github.com/dbohdan
 [laat]:https://github.com/laat
+[ryansroberts]:https://github.com/laat
+[kendall]:https://github.com/kendall
+[urso]:https://github.com/urso
 [bru]:https://github.com/bru
 [smt]:https://github.com/smt
 [ralesi]:https://github.com/ralesi
@@ -2382,3 +2460,4 @@ developers to elisp hackers!
 [Paradox]: https://github.com/Bruce-Connor/paradox
 [fancy-battery]: https://github.com/lunaryorn/fancy-battery.el
 [MacType]: https://code.google.com/p/mactype/
+[Emacs as a Server]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Emacs-Server.html

@@ -10,6 +10,7 @@
     - [Install](#install)
     - [Key Bindings](#key-bindings)
         - [Inferior REPL process](#inferior-repl-process)
+        - [Running Python Script in shell](#running-python-script-in-shell)
         - [Testing in Python](#testing-in-python)
         - [Other Python commands](#other-python-commands)
         - [Django](#django)
@@ -31,7 +32,7 @@ Features:
 - Code Navigation using  [anaconda-mode][]
 - Documentation Lookup using  [anaconda-mode][] and [pylookup][]
 - Test Runner using [nose.el][]
-- Virtual Environment using [pyvenv][]
+- Virtual Environment using [pyvenv][] and [pyenv][]
 - semantic mode is enabled
 - Django support via [pony-mode][]
 
@@ -66,6 +67,21 @@ Send code to inferior process commands:
 <kbd>SPC m s R</kbd>  | send region and switch to REPL in insert mode
 <kbd>CTRL+j</kbd>     | next item in REPL history
 <kbd>CTRL+k</kbd>     | previous item in REPL history
+
+### Running Python Script in shell
+
+To run a Python script like you would in the shell press <kbd>SPC m c c</kbd>
+to start the Python script in comint mode. This is useful when working with
+multiple Python files since the REPL does not reload changes made in other
+modules.
+
+    Key Binding       |                 Description
+----------------------|------------------------------------------------------------
+<kbd>SPC m c c</kbd>  | Execute current file in a comint shell
+<kbd>SPC m c C</kbd>  | Execute current file in a comint shell and switch to it in `insert state`
+
+**Note** With the universal argument <kbd>SPC u</kbd> you can enter a new
+compilation command.
 
 ### Testing in Python
 
@@ -102,7 +118,8 @@ Test commands (start with <kbd>m t</kbd> or <kbd>m T</kbd>):
 <kbd>SPC m g g</kbd>  | go to definition using `anaconda-mode-goto` (<kbd>C-o</kbd> to jump back)
 <kbd>SPC m h h</kbd>  | quick documentation using anaconda
 <kbd>SPC m h H</kbd>  | open documentation in `firefox` using [pylookup][pylookup]
-<kbd>SPC m v</kbd>    | activate a virtual environment with [pyvenv][pyvenv]
+<kbd>SPC m v</kbd>    | activate a virtual environment with [pyenv][pyenv]
+<kbd>SPC m V</kbd>    | activate a virtual environment with [pyvenv][pyvenv]
 
 ### Django
 
@@ -170,6 +187,7 @@ Manage Django with <kbd>SPC m j m</kbd>.
 
 [anaconda-mode]: https://github.com/proofit404/anaconda-mode
 [pyvenv]: https://github.com/jorgenschaefer/pyvenv
+[pyenv]: https://github.com/yyuu/pyenv
 [pylookup]: https://github.com/tsgates/pylookup
 [nose]: https://github.com/nose-devs/nose/
 [nose.el]: https://github.com/syl20bnr/nose.el
