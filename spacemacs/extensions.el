@@ -19,9 +19,6 @@
   '(
     centered-cursor
     emoji-cheat-sheet
-    evil-escape
-    evil-lisp-state
-    helm-rcirc
     helm-spacemacs
     solarized-theme
     spray
@@ -57,24 +54,6 @@
 (defun spacemacs/init-emoji-cheat-sheet ()
   (use-package emoji-cheat-sheet
     :commands emoji-cheat-sheet))
-
-(defun spacemacs/init-evil-escape ()
-  (use-package evil-escape
-    :init
-    (evil-escape-mode)
-    :config
-    (spacemacs|hide-lighter evil-escape-mode)))
-
-(defun spacemacs/init-evil-lisp-state ()
-  (setq evil-lisp-state-global t)
-  (setq evil-lisp-state-leader-prefix "k")
-  (require 'evil-lisp-state))
-
-(defun spacemacs/init-helm-rcirc ()
-  (use-package helm-rcirc
-    :commands helm-rcirc-auto-join-channels
-    :init
-    (evil-leader/set-key "irc" 'helm-rcirc-auto-join-channels)))
 
 (defun spacemacs/init-helm-spacemacs ()
   (use-package helm-spacemacs

@@ -20,6 +20,7 @@
                            ("gnu" . "http://elpa.gnu.org/packages/")
                            ("melpa" . "http://melpa.org/packages/")))
   ;; optimization, no need to activate all the packages so early
+  (setq package-enable-at-startup nil)
   (package-initialize 'noactivate)
   ;; Emacs 24.3 and above ships with python.el but in some Emacs 24.3.1 packages
   ;; for Ubuntu, python.el seems to be missing.
@@ -47,6 +48,10 @@
 
 (defconst configuration-layer-rollback-info "rollback-info"
   "Spacemacs rollback information file.")
+
+(defvar configuration-layer-error-count nil
+  "Non nil indicates the number of errors occurred during the
+installation of initialization.")
 
 (defvar configuration-layer-layers '()
   "Alist of declared configuration layers.")
@@ -86,8 +91,13 @@ sub-directory of the contribution directory.")
 (defvar configuration-layer-excluded-packages '()
   "List of all excluded packages declared at the layer level.")
 
-(defvar configuration-layer--loaded-files '()
-  "List of loaded files.")
+(defun configuration-layer/sync ()
+  "Synchronize declared layers in dotfile with spacemacs."
+  (dotspacemacs|call-func dotspacemacs/layers "Calling dotfile layers...")
+  (configuration-layer/init-layers)
+  (configuration-layer/load-layers)
+  (when dotspacemacs-delete-orphan-packages
+    (configuration-layer/delete-orphan-packages)))
 
 (defun configuration-layer/create-layer (name)
   "Ask the user for a configuration layer name and create a layer with this
@@ -118,7 +128,6 @@ NAME."
                      (format "%s.template" template)))
         (dest (concat (configuration-layer//get-private-layer-dir name)
                       (format "%s.el" template))))
-    
     (copy-file src dest)
     (find-file dest)
     (save-excursion
@@ -162,33 +171,35 @@ for that layer."
   (spacemacs/message "Looking for configuration layers in %s" dir)
   (ignore-errors
     (let ((files (directory-files dir nil nil 'nosort))
-          (filter-out (append configuration-layer-contrib-categories '("." "..")))
+          (filter-out configuration-layer-contrib-categories)
           result '())
       (dolist (f files)
         (when (and (file-directory-p (concat dir f))
-                   (not (member f filter-out)))
+                   (not (member f filter-out))
+                   (not (equalp ?. (aref f 0))))  ;; Remove hidden, traversal
           (spacemacs/message "-> Discovered configuration layer: %s" f)
           (push (cons (intern f) dir) result)))
       result)))
 
-(defun configuration-layer/declare-layers ()
+(defun configuration-layer/init-layers ()
   "Declare default layers and user layers from the dotfile by filling the
 `configuration-layer-layers' variable."
   (setq configuration-layer-paths (configuration-layer//discover-layers))
   (if (eq 'all dotspacemacs-configuration-layers)
       (setq dotspacemacs-configuration-layers
+            ;; spacemacs is contained in configuration-layer-paths
             (ht-keys configuration-layer-paths))
-    (push (configuration-layer//declare-layer 'spacemacs)
-          configuration-layer-layers))
-  (mapc (lambda (layer) (push layer configuration-layer-layers))
-        (configuration-layer//declare-layers
-         dotspacemacs-configuration-layers)))
+    (setq configuration-layer-layers
+          (list (configuration-layer//declare-layer 'spacemacs))))
+  (setq configuration-layer-layers
+        (append (configuration-layer//declare-layers
+                 dotspacemacs-configuration-layers) configuration-layer-layers)))
 
 (defun configuration-layer//declare-layers (layers)
   "Declare the passed configuration LAYERS.
 LAYERS is a list of layer symbols."
   (reduce (lambda (acc elt) (push elt acc))
-          (mapcar 'configuration-layer//declare-layer layers)
+          (mapcar 'configuration-layer//declare-layer (reverse layers))
           :initial-value nil))
 
 (defun configuration-layer//declare-layer (layer)
@@ -241,7 +252,7 @@ the following keys:
   "Load all declared layers."
   (let ((layers (reverse configuration-layer-layers)))
     (configuration-layer//set-layers-variables layers)
-    (configuration-layer//load-layer-files layers '("funcs.el" "config.el"))
+    (configuration-layer//load-layers-files layers '("funcs.el" "config.el"))
     ;; fill the hash tables
     (setq configuration-layer-excluded-packages (configuration-layer/get-excluded-packages layers))
     (setq configuration-layer-all-packages (configuration-layer/get-packages layers))
@@ -270,22 +281,24 @@ the following keys:
     ;; install and initialize packages and extensions
     (configuration-layer//initialize-extensions configuration-layer-all-pre-extensions-sorted t)
     (configuration-layer//install-packages)
-    (when dotspacemacs-loading-progress-bar
-      (spacemacs/append-to-buffer spacemacs-loading-text))
     (configuration-layer//initialize-packages)
     (configuration-layer//initialize-extensions configuration-layer-all-post-extensions-sorted)
     ;; restore warning level before initialization
     (setq warning-minimum-level :warning)
-    (configuration-layer//load-layer-files layers '("keybindings.el"))))
+    (configuration-layer//load-layers-files layers '("keybindings.el"))))
 
-(defun configuration-layer//load-layer-files (layers files)
-  "Load the files of list FILES for all LAYERS."
+(defun configuration-layer//load-layers-files (layers files)
+  "Load the files of list FILES for all passed LAYERS."
   (dolist (layer layers)
-    (let* ((sym (car layer))
-           (dir (plist-get (cdr layer) :dir)))
-      (dolist (file files)
-        (let ((file (concat dir file)))
-          (if (file-exists-p file) (configuration-layer/load-file file)))))))
+    (configuration-layer//load-layer-files layer files)))
+
+(defun configuration-layer//load-layer-files (layer files)
+  "Load the files of list FILES for the given LAYER."
+  (let* ((sym (car layer))
+         (dir (plist-get (cdr layer) :dir)))
+    (dolist (file files)
+      (let ((file (concat dir file)))
+        (if (file-exists-p file) (load file))))))
 
 (defsubst configuration-layer//add-layer-to-hash (pkg layer hash)
   "Add LAYER to the list value stored in HASH with key PKG."
@@ -314,12 +327,6 @@ the following keys:
   "Return a sorted list of the keys in the given hash table H."
   (mapcar 'intern (sort (mapcar 'symbol-name (ht-keys h)) 'string<)))
 
-(defun configuration-layer/load-file (file)
-  "Assure that FILE is loaded only once."
-  (unless (member file configuration-layer--loaded-files)
-    (load file)
-    (push file configuration-layer--loaded-files)))
-
 (defun configuration-layer/get-excluded-packages (layers)
   "Read `layer-excluded-packages' lists for all passed LAYERS and return a list
 of all excluded packages."
@@ -329,7 +336,7 @@ of all excluded packages."
              (dir (plist-get (cdr layer) :dir))
              (pkg-file (concat dir "packages.el")))
         (when (file-exists-p pkg-file)
-          (configuration-layer/load-file pkg-file)
+          (load pkg-file)
           (let ((excl-var (intern (format "%s-excluded-packages"
                                           (symbol-name layer-sym)))))
             (when (boundp excl-var)
@@ -348,7 +355,7 @@ VAR is a string with value `packages', `pre-extensions' or `post-extensions'."
              (dir (plist-get (cdr layer) :dir))
              (pkg-file (concat dir (format "%s.el" file))))
         (when (file-exists-p pkg-file)
-          (configuration-layer/load-file pkg-file)
+          (load pkg-file)
           (let* ((layer-name (symbol-name layer-sym))
                  (packages-var (intern (format "%s-%s" layer-name var))))
             (when (boundp packages-var)
@@ -394,14 +401,20 @@ If PRE is non nil then `layer-pre-extensions' is read instead of
                      (ht-get configuration-layer-all-packages pkg)
                      pkg installed-count not-installed-count) t)
             (unless (package-installed-p pkg)
-              (if (not (assq pkg package-archive-contents))
-                  (spacemacs/append-to-buffer
-                   (format "\nPackage %s is unavailable. Is the package name misspelled?\n"
-                    pkg))
-                (dolist (dep (configuration-layer//get-package-dependencies-from-archive
-                              pkg))
-                  (configuration-layer//activate-package (car dep)))
-                (package-install pkg)))
+              (condition-case err
+                  (if (not (assq pkg package-archive-contents))
+                      (spacemacs/append-to-buffer
+                       (format "\nPackage %s is unavailable. Is the package name misspelled?\n"
+                               pkg))
+                    (dolist (dep (configuration-layer//get-package-dependencies-from-archive
+                                  pkg))
+                      (configuration-layer//activate-package (car dep)))
+                    (package-install pkg))
+                ('error
+                 (configuration-layer//set-error)
+                 (spacemacs/append-to-buffer
+                  (format (concat "An error occurred while installing %s "
+                                  "(error: %s)\n") pkg err)))))
             (spacemacs//redisplay))
           (spacemacs/append-to-buffer "\n")))))
 
@@ -570,15 +583,20 @@ to select one."
 
 (defun configuration-layer//initialize-package (pkg layers)
   "Initialize the package PKG from the configuration layers LAYERS."
-  (let (initializedp)
-   (dolist (layer layers)
-     (let* ((init-func (intern (format "%s/init-%s" layer pkg))))
-       (when (and (package-installed-p pkg) (fboundp init-func))
-         (spacemacs/message "Package: Initializing %s:%s..." layer pkg)
-         (configuration-layer//activate-package pkg)
-         (funcall init-func)
-         (setq initializedp t))))
-   (when initializedp) (spacemacs/loading-animation)))
+  (dolist (layer layers)
+    (condition-case err
+        (let* ((init-func (intern (format "%s/init-%s" layer pkg))))
+          (when (and (package-installed-p pkg) (fboundp init-func))
+            (spacemacs/message "Package: Initializing %s:%s..." layer pkg)
+            (configuration-layer//activate-package pkg)
+            (funcall init-func)
+            (setq initializedp t)))
+      ('error
+       (configuration-layer//set-error)
+       (spacemacs/append-to-buffer
+        (format (concat "An error occurred while initializing %s "
+                        "(error: %s)\n") pkg err)))))
+  (spacemacs/loading-animation))
 
 (defun configuration-layer//activate-package (pkg)
   "Activate PKG."
@@ -604,14 +622,20 @@ If PRE is non nil then the extensions are pre-extensions."
   "Initialize the extension EXT from the configuration layers LAYERS.
 If PRE is non nil then the extension is a pre-extensions."
   (dolist (layer layers)
-    (let* ((l (assq layer configuration-layer-layers))
-           (ext-dir (plist-get (cdr l) :ext-dir))
-           (init-func (intern (format "%s/init-%s" layer ext))))
-      (add-to-list 'load-path (format "%s%s/" ext-dir ext))
-      (spacemacs/loading-animation)
-      (spacemacs/message "%s-extension: Initializing %s:%s..."
-                         (if pre "Pre" "Post") layer ext)
-      (if (fboundp init-func) (funcall init-func)))))
+    (condition-case err
+        (let* ((l (assq layer configuration-layer-layers))
+               (ext-dir (plist-get (cdr l) :ext-dir))
+               (init-func (intern (format "%s/init-%s" layer ext))))
+          (add-to-list 'load-path (format "%s%s/" ext-dir ext))
+          (spacemacs/loading-animation)
+          (spacemacs/message "%s-extension: Initializing %s:%s..."
+                             (if pre "Pre" "Post") layer ext)
+          (if (fboundp init-func) (funcall init-func)))
+      ('error
+       (configuration-layer//set-error)
+       (spacemacs/append-to-buffer
+        (format (concat "An error occurred while initializing %s "
+                        "(error: %s)\n") ext err))))))
 
 (defun configuration-layer//initialized-packages-count ()
   "Return the number of initialized packages and extensions."
@@ -758,9 +782,6 @@ deleted safely."
     ;; (message "orphans: %s" orphans)
     (if orphans
         (progn
-          ;; for the loading dot bar
-          (when dotspacemacs-loading-progress-bar
-            (spacemacs/append-to-buffer "OK!\n"))
           (spacemacs/append-to-buffer
            (format "Found %s orphan package(s) to delete...\n"
                    orphans-count))
@@ -777,24 +798,12 @@ deleted safely."
           (spacemacs/append-to-buffer "\n"))
       (spacemacs/message "No orphan package to delete."))))
 
-(defun configuration-layer/setup-after-init-hook ()
-  "Add post init processing."
-  (add-hook
-   'after-init-hook
-   (lambda ()
-     ;; Ultimate configuration decisions are given to the user who can defined
-     ;; them in his/her ~/.spacemacs file
-     (dotspacemacs|call-func dotspacemacs/config "Executing user config...")
-     (when dotspacemacs-loading-progress-bar
-       (spacemacs/append-to-buffer (format "%s\n" spacemacs-loading-done-text)))
-     ;; from jwiegley
-     ;; https://github.com/jwiegley/dot-emacs/blob/master/init.el
-     (let ((elapsed (float-time
-                     (time-subtract (current-time) emacs-start-time))))
-       (spacemacs/append-to-buffer
-        (format "[%s packages loaded in %.3fs]\n"
-                (configuration-layer//initialized-packages-count)
-                elapsed)))
-     (spacemacs/check-for-new-version spacemacs-version-check-interval))))
+(defun configuration-layer//set-error ()
+  "Set the error flag and change the mode-line color to red."
+  (if configuration-layer-error-count
+      (setq configuration-layer-error-count
+            (1+ configuration-layer-error-count))
+    (face-remap-add-relative 'mode-line '((:background "red") mode-line))
+    (setq configuration-layer-error-count 1)))
 
 (provide 'core-configuration-layer)
