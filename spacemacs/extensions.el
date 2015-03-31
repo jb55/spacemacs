@@ -68,14 +68,15 @@
   (use-package holy-mode
     :commands holy-mode
     :init
-    (when (eq 'emacs dotspacemacs-editing-style)
-      (holy-mode))
-    (spacemacs|add-toggle holy-mode
-                          :status holy-mode
-                          :on (holy-mode)
-                          :off (holy-mode -1)
-                          :documentation "Globally toggle the holy mode."
-                          :evil-leader "P <tab>" "P C-i")))
+    (progn
+      (when (eq 'emacs dotspacemacs-editing-style)
+        (holy-mode))
+      (spacemacs|add-toggle holy-mode
+                            :status holy-mode
+                            :on (holy-mode)
+                            :off (holy-mode -1)
+                            :documentation "Globally toggle the holy mode."
+                            :evil-leader "P <tab>" "P C-i"))))
 
 (defun spacemacs/init-helm-spacemacs ()
   (use-package helm-spacemacs
@@ -130,55 +131,48 @@
                zoom-frm-in)
     :init
     (progn
-      (defun spacemacs/zoom-frame-overlay-map ()
-        "Set a temporary overlay map to easily change the font size."
-        (set-temporary-overlay-map
-         (let ((map (make-sparse-keymap)))
-           (define-key map (kbd "+") 'spacemacs/zoom-in-frame)
-           (define-key map (kbd "-") 'spacemacs/zoom-out-frame)
-           (define-key map (kbd "=") 'spacemacs/reset-zoom)
-           map) t))
+      (spacemacs|define-micro-state zoom-frm
+        :doc "[+] zoom frame in [-] zoom frame out [=] reset zoom"
+        :evil-leader "zf"
+        :use-minibuffer t
+        :bindings
+        ("+" spacemacs/zoom-frm-in :post (spacemacs//zoom-frm-powerline-reset))
+        ("-" spacemacs/zoom-frm-out :post (spacemacs//zoom-frm-powerline-reset))
+        ("=" spacemacs/zoom-frm-unzoom :post (spacemacs//zoom-frm-powerline-reset)))
 
-      (defun spacemacs/zoom-frame-micro-state-doc ()
-        "Display a short documentation in the mini buffer."
-        (echo "Zoom Frame micro-state
-  + to zoom frame in
-  - to zoom frame out
-  = to reset zoom
-Press any other key to exit."))
-
-      (defun spacemacs/zoom-in-frame ()
-        "Zoom in frame."
-        (interactive)
-        (spacemacs/zoom-in-or-out 1))
-
-      (defun spacemacs/zoom-out-frame ()
-        "Zoom out frame."
-        (interactive)
-        (spacemacs/zoom-in-or-out -1))
-
-      (defun spacemacs/reset-zoom ()
-        "Reset the zoom."
-        (interactive)
-        (spacemacs/zoom-in-or-out 0))
-
-      (defun spacemacs/zoom-in-or-out (direction)
-        "Zoom the buffer in/out. If DIRECTION is positive or zero the frame text is enlarged,
-otherwise it is reduced."
-        (interactive)
-        (cond
-         ((eq direction 0) (zoom-frm-unzoom))
-         ((< direction 0) (zoom-frm-out))
-         ((> direction 0) (zoom-frm-in)))
+      (defun spacemacs//zoom-frm-powerline-reset ()
         (when (fboundp 'powerline-reset)
           (setq-default powerline-height (spacemacs/compute-powerline-height))
-          (powerline-reset))
-        (spacemacs/zoom-frame-overlay-map)
-        (spacemacs/zoom-frame-micro-state-doc))
-      (evil-leader/set-key
-        "zf+"  'spacemacs/zoom-in-frame
-        "zf-"  'spacemacs/zoom-out-frame
-        "zf="  'spacemacs/reset-zoom))))
+          (powerline-reset)))
+
+      (defun spacemacs//zoom-frm-do (arg)
+        "Perform a zoom action depending on ARG value."
+        (let ((zoom-action (cond ((eq arg 0) 'zoom-frm-unzoom)
+                                 ((< arg 0) 'zoom-frm-out)
+                                 ((> arg 0) 'zoom-frm-in)))
+              (fwp (* (frame-char-width) (frame-width)))
+              (fhp (* (frame-char-height) (frame-height))))
+          (funcall zoom-action)
+          (set-frame-size nil fwp fhp t)))
+
+      (defun spacemacs/zoom-frm-in ()
+        "zoom in frame, but keep the same pixel size"
+        (interactive)
+        (spacemacs//zoom-frm-do 1))
+
+      (defun spacemacs/zoom-frm-out ()
+        "zoom out frame, but keep the same pixel size"
+        (interactive)
+        (spacemacs//zoom-frm-do -1))
+
+      (defun spacemacs/zoom-frm-unzoom ()
+        "Unzoom current frame, keeping the same pixel size"
+        (interactive)
+        (spacemacs//zoom-frm-do 0))
+
+      ;; Font size, either with ctrl + mouse wheel
+      (global-set-key (kbd "C-<wheel-up>") 'spacemacs/zoom-frm-in)
+      (global-set-key (kbd "C-<wheel-down>") 'spacemacs/zoom-frm-out))))
 
 (defun spacemacs/init-emacs-builtin-process-menu ()
   (evilify process-menu-mode process-menu-mode-map))

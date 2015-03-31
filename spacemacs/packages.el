@@ -80,6 +80,7 @@
     helm-swoop
     helm-themes
     highlight
+    highlight-indentation
     highlight-numbers
     hippie-exp
     hl-anything
@@ -87,6 +88,7 @@
     ido-vertical-mode
     info+
     iedit
+    indent-guide
     let-alist
     leuven-theme
     linum-relative
@@ -169,10 +171,13 @@ which require an initialization must be listed explicitly in the list.")
   (use-package ace-window
     :defer t
     :init
-    (evil-leader/set-key
-      "bM"  'ace-swap-window
-      "wC"  'ace-delete-window
-      "wW"  'ace-window)
+    (progn
+      (evil-leader/set-key
+        "bM"  'ace-swap-window
+        "wC"  'ace-delete-window
+        "w <SPC>"  'ace-window)
+      ;; set ace-window keys to home-row
+      (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
     :config
     (progn
       ;; add support for golden-ratio
@@ -198,7 +203,7 @@ which require an initialization must be listed explicitly in the list.")
         (if (symbol-value aggressive-indent-mode)
             (global-aggressive-indent-mode -1)
           (global-aggressive-indent-mode)))
-      (evil-leader/set-key "ti" 'spacemacs/toggle-aggressive-indent))
+      (evil-leader/set-key "tI" 'spacemacs/toggle-aggressive-indent))
     :config
     (spacemacs|diminish aggressive-indent-mode " Ⓘ" " I")))
 
@@ -563,13 +568,17 @@ which require an initialization must be listed explicitly in the list.")
       (defvar spacemacs-evil-cursor-colors '((normal . "DarkGoldenrod2")
                                              (insert . "chartreuse3")
                                              (emacs  . "SkyBlue2")
-                                             (evilified . "yellow")
+                                             (evilified . "LightGoldenrod3")
                                              (visual . "gray")
                                              (motion . "plum3")
                                              (lisp   . "HotPink1")
                                              (iedit  . "firebrick1")
                                              (iedit-insert  . "firebrick1"))
         "Colors assigned to evil states.")
+
+      ;; put back refresh of the cursor on post-command-hook see status of:
+      ;; https://bitbucket.org/lyro/evil/issue/502/cursor-is-not-refreshed-in-some-cases
+      (add-hook 'post-command-hook 'evil-refresh-cursor)
 
       (defun spacemacs/state-color-face (state)
         "Return the symbol of the face for the given STATE."
@@ -708,10 +717,12 @@ which require an initialization must be listed explicitly in the list.")
       ;; pasting micro-state
       (defadvice evil-paste-before (after spacemacs/evil-paste-before activate)
         "Initate the paste micro-state after the execution of evil-paste-before"
-        (spacemacs/paste-micro-state))
+        (unless (evil-ex-p)
+          (spacemacs/paste-micro-state)))
       (defadvice evil-paste-after (after spacemacs/evil-paste-after activate)
         "Initate the paste micro-state after the execution of evil-paste-after"
-        (spacemacs/paste-micro-state))
+        (unless (evil-ex-p)
+          (spacemacs/paste-micro-state)))
       (defadvice evil-visual-paste (after spacemacs/evil-visual-paste activate)
         "Initate the paste micro-state after the execution of evil-visual-paste"
         (spacemacs/paste-micro-state))
@@ -826,9 +837,10 @@ which require an initialization must be listed explicitly in the list.")
   (use-package evil-jumper
     :init
     (progn
+      (setq evil-jumper-file (concat spacemacs-cache-directory "evil-jumps")
+            evil-jumper-auto-save-interval 3600)
       (evil-jumper-mode t)
-      (setq evil-jumper-file (concat spacemacs-cache-directory "evil-jumps"))
-      (setq evil-jumper-auto-save-interval 3600))))
+      )))
 
 (defun spacemacs/init-evil-leader ()
   (use-package evil-leader
@@ -1093,12 +1105,12 @@ which require an initialization must be listed explicitly in the list.")
 (defun spacemacs/init-flycheck ()
   (use-package flycheck
     :defer t
+    :init
+    (setq flycheck-check-syntax-automatically '(save mode-enabled)
+          flycheck-standard-error-navigation nil)
     :config
     (progn
       (spacemacs|diminish flycheck-mode " Ⓕ" " F")
-
-      (setq flycheck-check-syntax-automatically '(save mode-enabled)
-            flycheck-standard-error-navigation nil)
 
       (defun spacemacs/mode-line-flycheck-info-toggle ()
         "Toggle display of flycheck info."
@@ -1173,7 +1185,6 @@ which require an initialization must be listed explicitly in the list.")
         :overlay-category 'flycheck-info-overlay
         :fringe-bitmap 'my-flycheck-fringe-indicator
         :fringe-face 'flycheck-fringe-info)
-
 
       ;; key bindings
       (evil-leader/set-key
@@ -1300,6 +1311,7 @@ which require an initialization must be listed explicitly in the list.")
       (evil-leader/set-key "tk" 'spacemacs/toggle-guide-key)
       (setq guide-key/guide-key-sequence `("C-x"
                                            "C-c"
+                                           "C-w"
                                            ,dotspacemacs-leader-key
                                            ,dotspacemacs-emacs-leader-key
                                            ,dotspacemacs-major-mode-leader-key
@@ -1309,6 +1321,8 @@ which require an initialization must be listed explicitly in the list.")
                                            ;; C-M-m in terminal
                                            "<ESC><RET>"
                                            "g"
+                                           "\["
+                                           "\]"
                                            "z"
                                            "C-h")
             guide-key/recursive-key-sequence-flag t
@@ -1703,7 +1717,6 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
         ;; be sure to wipe any previous micro-state flag
         (setq spacemacs--ido-navigation-ms-enabled nil)
         ;; overwrite the key bindings for ido vertical mode only
-        (define-key ido-completion-map (kbd "C-d") 'ido-delete-file-at-head)
         (define-key ido-completion-map (kbd "C-<return>") 'ido-select-text)
         ;; use M-RET in terminal
         (define-key ido-completion-map "\M-\r" 'ido-select-text)
@@ -1806,6 +1819,24 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
 (defun spacemacs/init-iedit ()
   (use-package iedit
     :defer t))
+
+(defun spacemacs/init-indent-guide ()
+  (use-package indent-guide
+    :defer t
+    :init
+    (progn
+      (setq indent-guide-delay 0.3)
+      (spacemacs|add-toggle global-indent-guide
+                            :status indent-guide-mode
+                            :on (indent-guide-global-mode)
+                            :off (indent-guide-global-mode -1)
+                            :documentation
+                            (concat  "Guide to highlight the current "
+                                     "indentation (alternative to the toggle"
+                                     "highlight-indentation-current-column).")
+                            :evil-leader "ti"))
+    :config
+    (spacemacs|diminish indent-guide-mode " ⓘ" " i")))
 
 (defun spacemacs/init-info+ ()
   (use-package info+
@@ -2455,11 +2486,11 @@ displayed in the mode-line.")
       (add-to-hooks (if dotspacemacs-smartparens-strict-mode
                         'smartparens-strict-mode
                       'smartparens-mode)
-                    '(prog-mode-hook)))
+                    '(prog-mode-hook))
+      (setq sp-cancel-autoskip-on-backward-movement nil))
     :config
     (progn
       (require 'smartparens-config)
-      (setq sp-cancel-autoskip-on-backward-movement nil)
       (spacemacs|diminish smartparens-mode " (Ⓢ)" " (S)")
 
       (defun spacemacs/smartparens-pair-newline (id action context)

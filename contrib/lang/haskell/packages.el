@@ -13,6 +13,7 @@
 (defvar haskell-packages
   '(
     company-ghc
+    flycheck
     flycheck-haskell
     ghc
     haskell-mode
@@ -21,10 +22,13 @@
     shm
     ))
 
+(defun haskell/init-flycheck ()
+  (add-hook 'haskell-mode-hook 'flycheck-mode))
+
 (defun haskell/init-flycheck-haskell ()
   (use-package flycheck-haskell
-    :defer t
-    :init (add-hook 'haskell-mode-hook 'flycheck-haskell-setup)))
+    :commands flycheck-haskell-configure
+    :init (add-hook 'flycheck-mode-hook 'flycheck-haskell-configure)))
 
 (defun haskell/init-shm ()
   (use-package shm
@@ -192,10 +196,12 @@
       (defun haskell-hook ()
         (ghc-init)
         ;; Use advanced indention
-        (if (not haskell-enable-shm-support)
-            (turn-on-haskell-indentation)
-          )
-        )
+        ;; (if (not haskell-enable-shm-support)
+        ;;     (turn-on-haskell-indentation))
+        (when (configuration-layer/package-declaredp 'flycheck)
+          ;; remove overlays from ghc-check.el if flycheck is enabled
+          (set-face-attribute 'ghc-face-error nil :underline nil)
+          (set-face-attribute 'ghc-face-warn nil :underline nil)))
 
       ;; Useful to have these keybindings for .cabal files, too.
       (defun haskell-cabal-hook ()
@@ -222,16 +228,11 @@
 
 (defun haskell/init-company-ghc ()
   (use-package company-ghc
-    :if (configuration-layer/package-declaredp 'company)
+    :if (configuration-layer/layer-declaredp 'company-mode)
     :defer t
     :init
     (progn
-      (spacemacs|reset-local-company-backends haskell-mode)
-      (defun spacemacs//ghc-company-backend ()
-        "Add GHC company backend."
-        (push (spacemacs/company-backend-with-yas 'company-ghc)
-              company-backends))
-      (add-hook 'haskell-mode-hook 'spacemacs//ghc-company-backend t))))
+      (spacemacs|add-local-company-backend haskell-mode company-ghc))))
 
 (defun haskell/init-hi2 ()
   (use-package hi2

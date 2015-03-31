@@ -81,6 +81,9 @@
             - [Window manipulation micro-state](#window-manipulation-micro-state)
             - [Golden ratio](#golden-ratio)
         - [Buffers and Files](#buffers-and-files)
+            - [Buffers manipulation key bindings](#buffers-manipulation-key-bindings)
+            - [Buffers manipulation manipulation micro-state](#buffers-manipulation-manipulation-micro-state)
+            - [Files manipulations key bindings](#files-manipulations-key-bindings)
             - [Emacs and Spacemacs files](#emacs-and-spacemacs-files)
         - [Ido](#ido)
         - [Ido micro-state](#ido-micro-state)
@@ -547,27 +550,17 @@ than just a Vim emulation. It has more states than Vim for instance.
 
 `Spacemacs` has 9 states:
 
-- **Normal** (orange) - like the `normal mode of Vim`, used to execute and
-                        combine commands
-- **Insert** (green) - like the `insert mode of Vim`, used to actually insert
-                       text
-- **Visual** (gray) - like the `visual mode of Vim`, used to make text
-                      selection
-- **Motion** (purple) - exclusive to `Evil`, used to navigate read only
-                        buffers
-- **Emacs** (blue) - exclusive to `Evil`, using this state is like using a
-                     regular Emacs without Vim
-- **Evilified** (yellow) - exclusive to `Spacemacs`, this is an `emacs state`
-                           modified to bring Vim navigation, selection and
-                           search.
-- **Lisp** (pink) - exclusive to `Spacemacs`, used to navigate Lisp code and
-                    modify it (see [Editing Lisp code](#editing-lisp-code))
-- **Iedit** (red) - exclusive to `Spacemacs`, used to navigate between multiple
-                    regions of text using `iedit`
-                    (see [Replacing text with iedit](#replacing-text-with-iedit))
-- **Iedit Insert** (red) - exclusive to `Spacemacs`, used to replace multiple
-                   regions of text using `iedit`
-                   (see [Replacing text with iedit](#replacing-text-with-iedit))
+State        | Color       | Description
+-------------|-------------|--------------------------------------------------------
+normal       | orange      | like the `normal mode of Vim`, used to execute and combine commands
+insert       | green       | like the `insert mode of Vim`, used to actually insert text
+visual       | gray        | like the `visual mode of Vim`, used to make text selection
+motion       | purple      | exclusive to `Evil`, used to navigate read only buffers
+emacs        | blue        | exclusive to `Evil`, using this state is like using a regular Emacs without Vim
+evilified    | light brown | exclusive to `Spacemacs`, this is an `emacs state` modified to bring Vim navigation, selection and search.
+lisp         | pink        | exclusive to `Spacemacs`, used to navigate Lisp code and modify it (more [info](#editing-lisp-code))
+iedit        | red         | exclusive to `Spacemacs`, used to navigate between multiple regions of text using `iedit` (more [info](#replacing-text-with-iedit))
+iedit-insert | red         | exclusive to `Spacemacs`, used to replace multiple regions of text using `iedit` (more [info](#replacing-text-with-iedit))
 
 Note: Technically speaking there are also the `operator` and `replace` evil
 states.
@@ -778,20 +771,23 @@ _Ugly separators_
 
 Some graphical UI indicators can be toggled on and off (toggles start with `t`):
 
-    Key Binding       |                 Description
-----------------------|------------------------------------------------------------
-<kbd>SPC t c</kbd>    | display the fill column (by default the fill column is set to 80)
-<kbd>SPC t F</kbd>    | toggle frame fullscreen
-<kbd>SPC t f</kbd>    | toggle display of the fringe
-<kbd>SPC t h</kbd>    | toggle highlight of the current line
-<kbd>SPC t i</kbd>    | toggle aggressive indent
-<kbd>SPC t l</kbd>    | toggle truncate lines
-<kbd>SPC t L</kbd>    | toggle visual lines
-<kbd>SPC t M</kbd>    | toggle frame maximize
-<kbd>SPC t n</kbd>    | show the absolute line numbers
-<kbd>SPC t t</kbd>    | toggle frame transparency
-<kbd>SPC t T</kbd>    | toggle tool bar
-<kbd>SPC t U</kbd>    | toggle menu bar
+    Key Binding         |                 Description
+------------------------|------------------------------------------------------------
+<kbd>SPC t c</kbd>      | display the fill column (by default the fill column is set to 80)
+<kbd>SPC t F</kbd>      | toggle frame fullscreen
+<kbd>SPC t f</kbd>      | toggle display of the fringe
+<kbd>SPC t h h</kbd>    | toggle highlight of the current line
+<kbd>SPC t h i</kbd>    | toggle highlight indentation levels
+<kbd>SPC t h c</kbd>    | toggle highlight indentation current column
+<kbd>SPC t i</kbd>      | toggle indentation guide at point
+<kbd>SPC t I</kbd>      | toggle aggressive indent
+<kbd>SPC t l</kbd>      | toggle truncate lines
+<kbd>SPC t L</kbd>      | toggle visual lines
+<kbd>SPC t M</kbd>      | toggle frame maximize
+<kbd>SPC t n</kbd>      | show the absolute line numbers
+<kbd>SPC t t</kbd>      | toggle frame transparency
+<kbd>SPC t T</kbd>      | toggle tool bar
+<kbd>SPC t U</kbd>      | toggle menu bar
 
 **Note** These toggles are all available via the `helm-spacemacs` interface
 (press <kbd>SPC fe h</kbd> to display the `helm-spacemacs` buffer).
@@ -921,6 +917,7 @@ display ASCII characters instead (may be useful in terminal).
 `ⓕ`          | f          | auto-fill mode
 `Ⓚ`          | K          | guide-key mode
 `Ⓘ`          | I          | aggressive indent mode
+`ⓘ`          | i          | indentation guide
 `(Ⓟ)`        | (P)        | paredit mode
 `Ⓢ`          | S          | flyspell mode
 `(Ⓢ)`        | (S)        | [smartparens][sp] mode
@@ -1298,6 +1295,8 @@ the file system is better than `helm` in my opinion (especially because `ido` ca
 remember the last selected directories and buffers, maybe helm can do this ?).
 `ido` is also used to kill buffers.
 
+#### Buffers manipulation key bindings
+
 Buffer manipulation commands (start with `b`):
 
 Key Binding                               |              Description
@@ -1305,7 +1304,9 @@ Key Binding                               |              Description
 <kbd>SPC b 0</kbd>                        | move to the beginning of buffer (useful in `emacs state` buffers)
 <kbd>SPC b $</kbd>                        | move to the end of buffer (useful in `emacs state` buffers)
 <kbd>SPC b b</kbd> or <kbd>SPC TAB</kbd>  | switch to alternate buffer (switch back and forth)
+<kbd>SPC b d</kbd>                        | kill the current buffer (does not delete the visited file)
 <kbd>SPC b e</kbd>                        | erase the content of the buffer (ask for confirmation)
+<kbd>SPC b h</kbd>                        | open `*spacemacs*` home buffer
 <kbd>SPC b k</kbd>                        | kill the current buffer
 <kbd>SPC b K</kbd>                        | kill all buffers except the current one
 <kbd>SPC b C-K</kbd>                      | kill all buffers matching the regexp
@@ -1321,6 +1322,21 @@ Key Binding                               |              Description
 <kbd>SPC b s</kbd>                        | switch to a buffer using `helm`
 <kbd>SPC b w</kbd>                        | toggle read-only (writable state)
 <kbd>z f</kbd>                            | Make current function or comments visible in buffer as much as possible
+
+#### Buffers manipulation manipulation micro-state
+
+A convenient buffer manipulation micro-state allows to quickly cycles through
+the opened buffer and kill them.
+
+Key Binding         | Description
+--------------------|------------------------------------------------------------
+<kbd>SPC b .</kbd>  | initiate micro-state
+<kbd>K</kbd>        | kill current buffer
+<kbd>n</kbd>        | go to next buffer (avoid special buffers)
+<kbd>N</kbd>        | go to previous buffer (avoid special buffers)
+Any other key       | leave the micro-state
+
+#### Files manipulations key bindings
 
 Files manipulation commands (start with `f`):
 
@@ -2011,6 +2027,10 @@ Key Binding          | Function
 <kbd>SPC k (</kbd>   | insert expression before (same level as current one)
 <kbd>SPC k )</kbd>   | insert expression after (same level as current one)
 <kbd>SPC k $</kbd>   | go to the end of current sexp
+<kbd>SPC k ` k</kbd> | hybrid version of kill sexp (can be used in non lisp dialects)
+<kbd>SPC k ` p</kbd> | hybrid version of push sexp (can be used in non lisp dialects)
+<kbd>SPC k ` s</kbd> | hybrid version of slurp sexp (can be used in non lisp dialects)
+<kbd>SPC k ` t</kbd> | hybrid version of transpose sexp (can be used in non lisp dialects)
 <kbd>SPC k 0</kbd>   | go to the beginning of current sexp
 <kbd>SPC k a</kbd>   | absorb expression
 <kbd>SPC k b</kbd>   | forward barf expression
@@ -2025,12 +2045,14 @@ Key Binding          | Function
 <kbd>SPC k e</kbd>   | unwrap current expression and kill all symbols after point
 <kbd>SPC k E</kbd>   | unwrap current expression and kill all symbols before point
 <kbd>SPC k h</kbd>   | previous symbol
+<kbd>SPC k H</kbd>   | go to previous sexp
 <kbd>SPC k i</kbd>   | switch to `insert state`
 <kbd>SPC k I</kbd>   | go to beginning of current expression and switch to `insert state`
 <kbd>SPC k j</kbd>   | next closing parenthesis
 <kbd>SPC k J</kbd>   | join expression
 <kbd>SPC k k</kbd>   | previous opening parenthesis
 <kbd>SPC k l</kbd>   | next symbol
+<kbd>SPC k L</kbd>   | go to next sexp
 <kbd>SPC k p</kbd>   | paste after
 <kbd>SPC k P</kbd>   | paste before
 <kbd>SPC k r</kbd>   | raise expression (replace parent expression by current one)
@@ -2038,6 +2060,7 @@ Key Binding          | Function
 <kbd>SPC k S</kbd>   | backward slurp expression
 <kbd>SPC k t</kbd>   | transpose expression
 <kbd>SPC k u</kbd>   | undo
+<kbd>SPC k U</kbd>   | got to parent sexp backward
 <kbd>SPC k C-r</kbd> | redo
 <kbd>SPC k v</kbd>   | switch to `visual state`
 <kbd>SPC k V</kbd>   | switch to `visual line state`

@@ -57,14 +57,10 @@ To install them, use the following command:
 cabal install stylish-haskell hlint ghc-mod
 ```
 
-Next Emacs needs to know where to find these binaries, you can locate them with
-the following shell command:
-
-```sh
-dirname $(which ghc-mod)
-```
-
 Then you have to add this path to your system `$PATH` (preferred):
+Note that on **Linux** distributions the installed binaries should be in
+`~/.cabal/bin` and on **OS X** the binaries are installed in
+`/Users/<username>/Library/Haskell/bin`.
 
 ```sh
 export PATH=~/.cabal/bin/:$PATH
@@ -139,7 +135,7 @@ for [structured-haskell-mode][].
 reformat your code. You need to install the executable with `cabal
 install hindent`.
 
-To enable it you have to set the variable `haskell-enable-hindent-support`
+To enable it you have to set the variable `haskell-enable-hindent-style`
 to a supported style. The available styles are:
 - fundamental
 - johan-tibell
@@ -150,7 +146,7 @@ See examples [here][hindent-examples]
 
 ```elisp
 (setq-default dotspacemacs-configuration-layers
-  '((haskell :variables haskell-enable-hindent-support "johan-tibell")))
+  '((haskell :variables haskell-enable-hindent-style "johan-tibell")))
 ```
 
 ## Key bindings
