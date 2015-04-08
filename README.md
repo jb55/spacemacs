@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/syl20bnr/spacemacs.svg)](https://travis-ci.org/syl20bnr/spacemacs) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/syl20bnr/spacemacs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)[![Twitter][]](http://www.twitter.com/spacemacs)
+<a name="top"></a>
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/syl20bnr/spacemacs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/syl20bnr/spacemacs.svg)](https://travis-ci.org/syl20bnr/spacemacs) [![Buy A Drink](https://img.shields.io/badge/Paypal-Buy%20a%20Drink-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ESFVNPKP4Y742)[![Twitter][]](http://www.twitter.com/spacemacs)
 ***
 <p align="center"><img src="./doc/img/title2.png" alt="Spacemacs"/></p>
 <p align="center">
@@ -53,8 +54,11 @@
     - [Configuration layers and Package discovery](#configuration-layers-and-package-discovery)
     - [Key bindings discovery](#key-bindings-discovery)
     - [Describe functions](#describe-functions)
+- [How-To's](#how-tos)
 - [Contributions](#contributions)
-- [Credits](#credits)
+- [License](#license)
+- [Special Credits](#special-credits)
+- [Supporting Spacemacs](#supporting-spacemacs)
 - [FAQ](#faq)
     - [Common](#common)
     - [Windows](#windows)
@@ -377,6 +381,10 @@ Key Binding   |                 Description
 `<SPC> h d m` | describe-mode
 `<SPC> h d v` | describe-variable
 
+# How-To's
+
+Some quick `how-to's` are compiled in the [HOWTOs.md][] file.
+
 # Contributions
 
 `Spacemacs` needs _you_!
@@ -388,10 +396,27 @@ If you are ready to contribute please begin by consulting the
 [contribution guidelines][CONTRIBUTE.md] and [conventions][CONVENTIONS.md],
 thanks!
 
-# Credits
+# License
+
+The license is GPLv3 for all parts specific to `Spacemacs`, this includes:
+- the initialization and core files
+- all the layer files.
+- the documentation
+
+# Special Credits
 
 [Spacemacs logo][] by [Nasser Alshammari][]
 released under a Creative Commons license.
+
+# Supporting Spacemacs
+
+The best way to support Spacemacs is to contribute to it either by reporting
+bugs, helping the community on the [Gitter Chat][] or sending pull requests.
+
+If you want to show your support financially you can buy a drink to the
+maintainer by clicking on the [Paypal badge](#top).
+
+Thank you !
 
 # FAQ
 
@@ -444,6 +469,7 @@ details.
 
 [Twitter]: http://i.imgur.com/tXSoThF.png
 [CONVENTIONS.md]: doc/CONVENTIONS.md
+[HOWTOs.md]: doc/HOWTOs.md
 [config]: doc/DOCUMENTATION.md#configuration-layers
 [dotfile]: doc/DOCUMENTATION.md#dotfile-configuration
 [manage_config]: doc/DOCUMENTATION.md#managing-private-configuration-layers
