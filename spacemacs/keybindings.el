@@ -71,7 +71,7 @@
 ;; Cycling settings -----------------------------------------------------------
 (evil-leader/set-key "Tn" 'spacemacs/cycle-spacemacs-theme)
 ;; describe functions ---------------------------------------------------------
-(defmacro spacemacs||describe-set-key (keys func)
+(defmacro spacemacs||set-helm-key (keys func)
   "Define a key bindings for FUNC using KEYS.
 Ensure that helm is required before calling FUNC."
   (let ((func-name (intern (format "spacemacs/%s" (symbol-name func)))))
@@ -82,13 +82,17 @@ Ensure that helm is required before calling FUNC."
          (require 'helm)
          (call-interactively ',func))
        (evil-leader/set-key ,keys ',func-name))))
-(spacemacs||describe-set-key "hdc" describe-char)
-(spacemacs||describe-set-key "hdf" describe-function)
-(spacemacs||describe-set-key "hdk" describe-key)
-(spacemacs||describe-set-key "hdm" describe-mode)
-(spacemacs||describe-set-key "hdp" describe-package)
-(spacemacs||describe-set-key "hdt" describe-theme)
-(spacemacs||describe-set-key "hdv" describe-variable)
+(spacemacs||set-helm-key "hdc" describe-char)
+(spacemacs||set-helm-key "hdf" describe-function)
+(spacemacs||set-helm-key "hdk" describe-key)
+(spacemacs||set-helm-key "hdm" describe-mode)
+(spacemacs||set-helm-key "hdp" describe-package)
+(spacemacs||set-helm-key "hdt" describe-theme)
+(spacemacs||set-helm-key "hdv" describe-variable)
+(spacemacs||set-helm-key "hL" helm-locate-library)
+;; search functions -----------------------------------------------------------
+(spacemacs||set-helm-key "sww" helm-wikipedia-suggest)
+(spacemacs||set-helm-key "swg" helm-google-suggest)
 ;; errors ---------------------------------------------------------------------
 (evil-leader/set-key
   "en" 'spacemacs/next-error
@@ -150,17 +154,6 @@ Ensure that helm is required before calling FUNC."
   "Sd" 'ispell-change-dictionary
   "Sn" 'flyspell-goto-next-error)
 ;; toggle ---------------------------------------------------------------------
-(spacemacs|add-toggle fringe
-                      :status (not (equal fringe-mode 0))
-                      :on (call-interactively 'fringe-mode)
-                      :off (fringe-mode 0)
-                      :documentation "Display the fringe in GUI mode."
-                      :evil-leader "tf")
-(spacemacs|add-toggle fullscreen-frame
-                      :status nil
-                      :on (spacemacs/toggle-frame-fullscreen)
-                      :documentation "Display the current frame in full screen."
-                      :evil-leader "tF")
 (spacemacs|add-toggle highlight-current-line-globally
                       :status global-hl-line-mode
                       :on (global-hl-line-mode)
@@ -178,23 +171,12 @@ Ensure that helm is required before calling FUNC."
                       :off (visual-line-mode -1)
                       :documentation "Move point according to visual lines."
                       :evil-leader "tL")
-(spacemacs|add-toggle maximize-frame
-                      :if (version< "24.3.50" emacs-version)
-                      :status nil
-                      :on (toggle-frame-maximized)
-                      :documentation "Maximize the current frame."
-                      :evil-leader "tM")
 (spacemacs|add-toggle line-numbers
                       :status linum-mode
                       :on (global-linum-mode)
                       :off (global-linum-mode -1)
                       :documentation "Show the line numbers."
                       :evil-leader "tn")
-(spacemacs|add-toggle transparent-frame
-                      :status nil
-                      :on (toggle-transparency)
-                      :documentation "Make the current frame non-opaque."
-                      :evil-leader "tt")
 (spacemacs|add-toggle auto-fill-mode
                       :status auto-fill-function
                       :on (auto-fill-mode)
@@ -206,20 +188,42 @@ Ensure that helm is required before calling FUNC."
                       :on (toggle-debug-on-error)
                       :documentation "Toggle display of backtrace when an error happens."
                       :evil-leader "tD")
+(spacemacs|add-toggle fringe
+                      :status (not (equal fringe-mode 0))
+                      :on (call-interactively 'fringe-mode)
+                      :off (fringe-mode 0)
+                      :documentation "Display the fringe in GUI mode."
+                      :evil-leader "Tf")
+(spacemacs|add-toggle fullscreen-frame
+                      :status nil
+                      :on (spacemacs/toggle-frame-fullscreen)
+                      :documentation "Display the current frame in full screen."
+                      :evil-leader "TF")
+(spacemacs|add-toggle maximize-frame
+                      :if (version< "24.3.50" emacs-version)
+                      :status nil
+                      :on (toggle-frame-maximized)
+                      :documentation "Maximize the current frame."
+                      :evil-leader "TM")
+(spacemacs|add-toggle transparent-frame
+                      :status nil
+                      :on (toggle-transparency)
+                      :documentation "Make the current frame non-opaque."
+                      :evil-leader "TT")
 (spacemacs|add-toggle tool-bar
                       :if window-system
                       :status tool-bar-mode
                       :on (tool-bar-mode)
                       :off (tool-bar-mode -1)
                       :documentation "Display the tool bar in GUI mode."
-                      :evil-leader "tT")
+                      :evil-leader "Tt")
 (spacemacs|add-toggle menu-bar
                       :if (or window-system (version<= "24.3.1" emacs-version))
                       :status menu-bar-mode
                       :on (menu-bar-mode)
                       :off (menu-bar-mode -1)
                       :documentation "Display the menu bar."
-                      :evil-leader "tU")
+                      :evil-leader "Tm")
 ;; quit -----------------------------------------------------------------------
 (evil-leader/set-key
   "qs" 'spacemacs/save-buffers-kill-emacs
@@ -286,15 +290,6 @@ Ensure that helm is required before calling FUNC."
 ;; google translate -----------------------------------------------------------
 (evil-leader/set-key
   "xgl" 'set-google-translate-languages)
-;; emacs-lisp -----------------------------------------------------------------
-(evil-leader/set-key-for-mode 'emacs-lisp-mode
-  "me$" 'lisp-state-eval-sexp-end-of-line
-  "mee" 'eval-last-sexp
-  "mef" 'eval-defun
-  "mel" 'lisp-state-eval-sexp-end-of-line
-  "m,"  'lisp-state-toggle-lisp-state
-  "mtb" 'spacemacs/ert-run-tests-buffer
-  "mtq" 'ert)
 
 ;; ---------------------------------------------------------------------------
 ;; Micro-states

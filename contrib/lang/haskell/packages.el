@@ -12,6 +12,7 @@
 
 (defvar haskell-packages
   '(
+    cmm-mode
     company
     company-ghc
     flycheck
@@ -22,15 +23,29 @@
     shm
     ))
 
-(defun haskell/init-flycheck ()
+(defun haskell/init-cmm-mode ()
+  (use-package cmm-mode
+    :defer t))
+
+(defun haskell/post-init-flycheck ()
   (add-hook 'haskell-mode-hook 'flycheck-mode))
 
-(defun haskell/init-flycheck-haskell ()
-  (use-package flycheck-haskell
-    :commands flycheck-haskell-configure
-    :init (add-hook 'flycheck-mode-hook 'flycheck-haskell-configure)))
+(when (configuration-layer/layer-usedp 'syntax-checking)
+  (defun haskell/init-flycheck-haskell ()
+    (use-package flycheck-haskell
+      :if (configuration-layer/package-usedp 'flycheck)
+      :commands flycheck-haskell-configure
+      :init (add-hook 'flycheck-mode-hook 'flycheck-haskell-configure))))
 
-(defun haskell/init-ghc ())
+(defun haskell/init-ghc ()
+  (use-package ghc
+    :defer t
+    :init (add-hook 'haskell-mode-hook 'ghc-init)
+    :config
+    (when (configuration-layer/package-usedp 'flycheck)
+          ;; remove overlays from ghc-check.el if flycheck is enabled
+          (set-face-attribute 'ghc-face-error nil :underline nil)
+          (set-face-attribute 'ghc-face-warn nil :underline nil))))
 
 (defun haskell/init-haskell-mode ()
   (require 'haskell-yas)
@@ -38,16 +53,10 @@
     :defer t
     :config
     (progn
-
       ;; Haskell main editing mode key bindings.
       (defun spacemacs/init-haskell-mode ()
-        (ghc-init)
         ;; use only internal indentation system from haskell
-        (electric-indent-local-mode -1)
-        (when (configuration-layer/package-usedp 'flycheck)
-          ;; remove overlays from ghc-check.el if flycheck is enabled
-          (set-face-attribute 'ghc-face-error nil :underline nil)
-          (set-face-attribute 'ghc-face-warn nil :underline nil)))
+        (electric-indent-local-mode -1))
 
       ;;GHCi-ng
       (when haskell-enable-ghci-ng-support
@@ -221,14 +230,12 @@
 
 (when (configuration-layer/layer-usedp 'auto-completion)
   (defun haskell/post-init-company ()
-    (spacemacs|enable-company haskell-mode))
+    (spacemacs|add-company-hook haskell-mode))
 
   (defun haskell/init-company-ghc ()
     (use-package company-ghc
       :if (configuration-layer/package-usedp 'company)
       :defer t
       :init
-      ;; remove yasnippet for now, it seems to prevent
-      ;; company-ghc to work properly the first time
-      ;; it is activated
-      (push 'company-ghc company-backends-haskell-mode))))
+      (push '(company-ghc company-dabbrev-code company-yasnippet)
+            company-backends-haskell-mode))))

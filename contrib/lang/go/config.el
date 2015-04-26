@@ -12,5 +12,4 @@
 
 ;; variables
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (spacemacs|init-company-backends go-mode))
+(spacemacs|defvar-company-backends go-mode)

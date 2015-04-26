@@ -22,7 +22,7 @@ which require an initialization must be listed explicitly in the list.")
         (unless arg
           (if (file-exists-p "~/.authinfo.gpg")
               (spacemacs//rcirc-authinfo-config)
-            (message "Warning: Cannot find file ~/.authinfo.gpg")))
+            (spacemacs/warning "Cannot find file ~/.authinfo.gpg")))
         (rcirc arg))
 
       (defun spacemacs//rcirc-with-znc (arg)
@@ -36,7 +36,7 @@ which require an initialization must be listed explicitly in the list.")
                  rcirc-server-alist))
           (spacemacs//znc-rcirc-connect)))
 
-      (evil-leader/set-key "ai" 'spacemacs/rcirc)
+      (evil-leader/set-key "air" 'spacemacs/rcirc)
       (defun spacemacs/rcirc (arg)
         "Launch rcirc."
         (interactive "P")

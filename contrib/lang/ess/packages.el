@@ -145,10 +145,12 @@ not play nicely with autoloads"
 
 (when (configuration-layer/layer-usedp 'auto-completion)
   (defun ess/post-init-company ()
-    (spacemacs|enable-company ess-mode))
+    (spacemacs|add-company-hook ess-mode))
 
   (defun ess/init-company-ess ()
     (use-package company-ess
+      :if (configuration-layer/package-usedp 'company)
       :defer t
-      :init (push '(company-ess-backend :with company-yasnippet)
-                  company-backends-ess-mode))))
+      :init
+      (push '(company-ess-backend :with company-yasnippet)
+            company-backends-ess-mode))))

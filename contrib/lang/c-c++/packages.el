@@ -47,11 +47,9 @@ which require an initialization must be listed explicitly in the list.")
 (defun c-c++/init-cmake-mode ()
   (use-package cmake-mode
     :mode (("CMakeLists\\.txt\\'" . cmake-mode) ("\\.cmake\\'" . cmake-mode))
-    :config
-    (when (configuration-layer/layer-usedp 'auto-completion)
-      (push 'company-cmake company-backends-cmake-mode))))
+    :init (push 'company-cmake company-backends-cmake-mode)))
 
-(defun c-c++/init-flycheck ()
+(defun c-c++/post-init-flycheck ()
   (add-to-hooks 'flycheck-mode '(c-mode-hook c++-mode-hook)))
 
 (defun c-c++/init-srefactor ()
@@ -78,8 +76,10 @@ which require an initialization must be listed explicitly in the list.")
 (when (configuration-layer/layer-usedp 'auto-completion)
   (defun c-c++/post-init-company ()
     ;; push this backend by default
-    (push '(company-clang :with company-yasnippet) company-backends-c-c++)
-    (spacemacs|enable-company c-c++ c-common-mode-hook)
+    (push '(company-clang :with company-yasnippet)
+          company-backends-c-mode-common)
+    (spacemacs|add-company-hook c-mode-common)
+    (spacemacs|add-company-hook cmake-mode)
 
     ;; .clang_complete file loading
     ;; Sets the arguments for company-clang based on a project-specific text file.
@@ -128,4 +128,4 @@ which require an initialization must be listed explicitly in the list.")
     (use-package company-c-headers
       :if (configuration-layer/package-usedp 'company)
       :defer t
-      :init (push 'company-c-headers company-backends-c-c++))))
+      :init (push 'company-c-headers company-backends-c-mode-common))))

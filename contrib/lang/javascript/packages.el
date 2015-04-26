@@ -41,7 +41,7 @@ which require an initialization must be listed explicitly in the list.")
                                      (setq indent-line-function 'javascript/coffee-indent
                                            evil-shift-width coffee-tab-width))))))
 
-(defun javascript/init-flycheck ()
+(defun javascript/post-init-flycheck ()
   (add-hook 'coffee-mode-hook 'flycheck-mode)
   (add-hook 'js2-mode-hook    'flycheck-mode)
   (add-hook 'json-mode-hook   'flycheck-mode))
@@ -157,12 +157,13 @@ which require an initialization must be listed explicitly in the list.")
 
 (when (configuration-layer/layer-usedp 'auto-completion)
   (defun javascript/post-init-company ()
-    (spacemacs|enable-company js2-mode))
+    (spacemacs|add-company-hook js2-mode))
 
   (defun javascript/init-company-tern ()
     (use-package company-tern
       :if (and (configuration-layer/package-usedp 'company)
                (configuration-layer/package-usedp 'tern))
       :defer t
-      :init (push '(company-tern :with company-yasnippet)
-                  company-backends-js2-mode))))
+      :init
+      (push '(company-tern :with company-yasnippet)
+            company-backends-js2-mode))))

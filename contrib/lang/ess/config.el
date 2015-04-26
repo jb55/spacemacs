@@ -12,8 +12,7 @@
 
 ;; Variables
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (spacemacs|init-company-backends ess-mode))
+(spacemacs|defvar-company-backends ess-mode)
 
 (defvar ess-enable-smart-equals t
   "If non-nil smart-equal support is enabled")

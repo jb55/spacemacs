@@ -1,12 +1,12 @@
 (defvar ruby-packages
   '(
-    ;; package rubys go here
-    enh-ruby-mode
-    ruby-tools
-    flycheck
-    ruby-test-mode
-    robe
     bundler
+    company
+    enh-ruby-mode
+    flycheck
+    robe
+    ruby-test-mode
+    ruby-tools
     yaml-mode))
 
 (when ruby-version-manager
@@ -47,7 +47,7 @@
           (unless (equal attr 'unspecified)
             (color-darken-name attr 20) "#000000"))))))
 
-(defun ruby/init-flycheck ()
+(defun ruby/post-init-flycheck ()
   (add-hook 'enh-ruby-mode-hook 'flycheck-mode))
 
 (defun ruby/init-ruby-tools ()
@@ -128,7 +128,11 @@
   "Initialize Robe mode"
   (use-package robe
     :defer t
-    :init (add-hook 'enh-ruby-mode-hook 'robe-mode)
+    :init
+    (progn
+      (add-hook 'enh-ruby-mode-hook 'robe-mode)
+      (when (configuration-layer/layer-usedp 'auto-completion)
+        (push '(company-robe :with company-yasnippet) company-backends-enh-ruby-mode)))
     :config
     (progn
       (spacemacs|hide-lighter robe-mode)
@@ -173,3 +177,7 @@
       (evil-leader/set-key
         "mtb" 'ruby-test-run
         "mtt" 'ruby-test-run-at-point))))
+
+(when (configuration-layer/layer-usedp 'auto-completion)
+  (defun ruby/post-init-company ()
+    (spacemacs|add-company-hook enh-ruby-mode)))

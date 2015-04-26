@@ -12,6 +12,4 @@
 
 ;; Variables
 
-
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (spacemacs|init-company-backends js2-mode))
+(spacemacs|defvar-company-backends js2-mode)

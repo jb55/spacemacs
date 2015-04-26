@@ -69,6 +69,9 @@
         - [Helm micro-state](#helm-micro-state)
     - [Discovering](#discovering)
         - [Key bindings](#key-bindings)
+            - [Guide-key](#guide-key)
+            - [Helm describe key bindings](#helm-describe-key-bindings)
+        - [Getting help](#getting-help)
         - [Available layers](#available-layers)
             - [Available packages in Spacemacs](#available-packages-in-spacemacs)
             - [New packages from ELPA repositories](#new-packages-from-elpa-repositories)
@@ -77,6 +80,7 @@
         - [Point/Cursor](#pointcursor)
             - [Smooth scrolling](#smooth-scrolling)
         - [Vim motions with ace-jump mode](#vim-motions-with-ace-jump-mode)
+            - [ace-link mode](#ace-link-mode)
         - [Window manipulation](#window-manipulation)
             - [Window manipulation key bindings](#window-manipulation-key-bindings)
             - [Window manipulation micro-state](#window-manipulation-micro-state)
@@ -102,6 +106,7 @@
         - [With an external tool](#with-an-external-tool)
             - [Searching in an arbitrary directory](#searching-in-an-arbitrary-directory)
             - [Searching in a project](#searching-in-a-project)
+            - [Searching the web](#searching-the-web)
         - [Persistent highlighting](#persistent-highlighting)
         - [Stacking highlights](#stacking-highlights)
         - [Highlight current symbol](#highlight-current-symbol)
@@ -128,6 +133,7 @@
                 - [In iedit state](#in-iedit-state)
                 - [In iedit-insert state](#in-iedit-insert-state)
             - [Examples](#examples)
+        - [Replacing text in several files](#replacing-text-in-several-files)
         - [Commenting](#commenting)
         - [Deleting files](#deleting-files)
         - [Editing Lisp code](#editing-lisp-code)
@@ -141,7 +147,6 @@
     - [Modes](#modes)
         - [Major Mode leader key](#major-mode-leader-key)
         - [Helm](#helm)
-        - [Org](#org)
         - [Python](#python)
         - [JavaScript](#javascript)
         - [HTML and CSS](#html-and-css)
@@ -775,26 +780,29 @@ _Ugly separators_
 
 ### Graphical UI Toggles
 
-Some graphical UI indicators can be toggled on and off (toggles start with `t`):
+Some graphical UI indicators can be toggled on and off
+(toggles start with `t` and `T`):
 
     Key Binding         |                 Description
 ------------------------|------------------------------------------------------------
 <kbd>SPC t ~</kbd>      | display `~` in the fringe on empty lines
 <kbd>SPC t c</kbd>      | display the fill column (by default the fill column is set to 80)
-<kbd>SPC t F</kbd>      | toggle frame fullscreen
-<kbd>SPC t f</kbd>      | toggle display of the fringe
 <kbd>SPC t h h</kbd>    | toggle highlight of the current line
 <kbd>SPC t h i</kbd>    | toggle highlight indentation levels
 <kbd>SPC t h c</kbd>    | toggle highlight indentation current column
 <kbd>SPC t i</kbd>      | toggle indentation guide at point
-<kbd>SPC t I</kbd>      | toggle aggressive indent
 <kbd>SPC t l</kbd>      | toggle truncate lines
 <kbd>SPC t L</kbd>      | toggle visual lines
-<kbd>SPC t M</kbd>      | toggle frame maximize
 <kbd>SPC t n</kbd>      | show the absolute line numbers
-<kbd>SPC t t</kbd>      | toggle frame transparency
-<kbd>SPC t T</kbd>      | toggle tool bar
-<kbd>SPC t U</kbd>      | toggle menu bar
+
+    Key Binding         |                 Description
+------------------------|------------------------------------------------------------
+<kbd>SPC T F</kbd>      | toggle frame fullscreen
+<kbd>SPC T f</kbd>      | toggle display of the fringe
+<kbd>SPC T m</kbd>      | toggle menu bar
+<kbd>SPC T M</kbd>      | toggle frame maximize
+<kbd>SPC T t</kbd>      | toggle tool bar
+<kbd>SPC T T</kbd>      | toggle frame transparency
 
 **Note** These toggles are all available via the `helm-spacemacs` interface
 (press <kbd>SPC fe h</kbd> to display the `helm-spacemacs` buffer).
@@ -835,8 +843,8 @@ Some elements can be dynamically toggled:
     Key Binding        |                 Description
 -----------------------|------------------------------------------------------------
 <kbd>SPC t m b</kbd>   | toggle the battery status
-<kbd>SPC t m c</kbd>   | toggle the `org` task clock
-<kbd>SPC t m f</kbd>   | toggle the flycheck info
+<kbd>SPC t m c</kbd>   | toggle the `org` task clock (available in `org` layer)
+<kbd>SPC t m f</kbd>   | toggle the flycheck info (available in `syntax-checking` layer)
 <kbd>SPC t m m</kbd>   | toggle the minor mode lighters
 <kbd>SPC t m n</kbd>   | toggle the cat! (if `colors` layer is declared in your dotfile)
 <kbd>SPC t m p</kbd>   | toggle the point character position
@@ -937,7 +945,6 @@ Key Binding          |   Unicode   |   ASCII    |                    Mode
 <kbd>SPC t c</kbd>   | `ⓒ`        | c          | fill-column-indicator mode
 `none`               | `ⓔ`        | e          | [evil-org][evil-org-mode] mode
 <kbd>SPC t f</kbd>   | `ⓕ`        | f          | flycheck mode
-<kbd>SPC t C-f</kbd> |             |            | global
 <kbd>SPC t F</kbd>   | `Ⓕ`        | F          | auto-fill mode
 <kbd>SPC t g</kbd>   | `ⓖ`        | g          | [golden-ratio][] mode
 <kbd>SPC t k</kbd>   | `Ⓖ`        | G          | guide-key mode
@@ -950,7 +957,6 @@ Key Binding          |   Unicode   |   ASCII    |                    Mode
 <kbd>SPC t w</kbd>   | `ⓦ`        | w          | whitespace mode
 <kbd>SPC t C-w</kbd> |             |            | global
 <kbd>SPC t y</kbd>   | `ⓨ`        | y          | [yasnippet][yasnippet] mode
-<kbd>SPC t C-y</kbd> |             |            | global
 
 # Commands
 
@@ -1074,6 +1080,8 @@ Key Binding           | Description
 
 ### Key bindings
 
+#### Guide-key
+
 An help buffer is displayed each time the <kbd>SPC</kbd> key is pressed in
 normal mode. It lists the available key bindings and their associated
 commands.
@@ -1081,6 +1089,41 @@ commands.
 By default the [guide-key][] buffer will be displayed quickly after the key
 has been pressed. You can change the delay by setting the variable
 `dotspacemacs-guide-key-delay` to your liking (the value is in second).
+
+#### Helm describe key bindings
+
+It is possible to search for specific key bindings by pressing
+<kbd>SPC ?</kbd>.
+
+To narrow the list to some key bindings using the leader key type a pattern
+like this regular expression:
+
+    SPC\ b
+
+which would list all `buffer` related bindings.
+
+### Getting help
+
+`Describe functions` are powerful Emacs introspection commands to get
+information about functions, variables, modes etc. These commands are bound
+thusly:
+
+Key Binding          |                 Description
+---------------------|------------------------------------------------------------------
+<kbd>SPC h d c</kbd> | describe current character under point
+<kbd>SPC h d f</kbd> | describe a function
+<kbd>SPC h d k</kbd> | describe a key
+<kbd>SPC h d m</kbd> | describe current modes
+<kbd>SPC h d p</kbd> | describe a package
+<kbd>SPC h d t</kbd> | describe a theme
+<kbd>SPC h d v</kbd> | describe a variable
+
+Other help key bindings
+
+Key Binding          |                 Description
+---------------------|------------------------------------------------------------------
+<kbd>SPC h i</kbd>   | search in info pages with the symbol at point
+<kbd>SPC h m</kbd>   | search available man pages
 
 ### Available layers
 
@@ -1609,13 +1652,20 @@ Key Binding        |                 Description
 **Note** `ag` and `pt` are optimized to be used in a source control repository
 but they can be used in an arbitrary directory as well.
 
+By default Spacemacs will look for the first installed tool in the list
+`("ag", "pt", "ack", "grep")`. This list can be changed in the dotfile with
+the variable `dotspacemacs-search-tools`.
+
+**Beware** if you use `pt`, [TCL parser tools][tcl] also install a command line
+tool called `pt`.
+
 #### Searching in an arbitrary directory
 
 To use these utilities in one or several arbitrary directories:
 
 Key Binding               |                 Description
 --------------------------|---------------------------------------------
-<kbd>SPC s /</kbd>        | execute the first found utility in this order `pt`, `ag`, `ack` and `grep`
+<kbd>SPC s /</kbd>        | execute the first found utility (by default `ag`, `pt`, `ack` and `grep`)
 <kbd>SPC s a</kbd>        | `ag`
 <kbd>SPC s g</kbd>        | `grep`
 <kbd>SPC s k</kbd>        | `ack`
@@ -1633,13 +1683,20 @@ To use these utilities in a project using `projectile`:
 
 Key Binding               |                 Description
 --------------------------|---------------------------------------------
-<kbd>SPC /</kbd>          | execute the first found utility in this order `pt`, `ag`, `ack` and `grep`
+<kbd>SPC /</kbd>          | execute the first found utility (by default `ag`, `pt`, `ack` and `grep`)
 <kbd>SPC p s a</kbd>      | `ag`
 <kbd>SPC p s g</kbd>      | `grep`
 <kbd>SPC p s k</kbd>      | `ack`
 <kbd>SPC p s p</kbd>      | `pt`
 
 **Pro Tip** Use <kbd>SPC h l</kbd> to bring back the last helm session.
+
+#### Searching the web
+
+Key Binding               |                 Description
+--------------------------|---------------------------------------------
+<kbd>SPC s w g</kbd>      | Get Google suggestions in emacs. Opens Google results in Browser.
+<kbd>SPC s w w</kbd>      | Get Wikipedia suggestions in emacs. Opens Wikipedia page in Browser.
 
 ### Persistent highlighting
 
@@ -2026,6 +2083,21 @@ default Vim behavior when used outside of an occurrence.
 - substitute symbol _with expand-region_: <kbd>SPC v v e S "toto" ESC ESC</kbd>
 - replace symbol with yanked (copied) text _with expand region_: <kbd>SPC v e p ESC ESC</kbd>
 
+### Replacing text in several files
+
+Replacing an occurrence of text in several files can be performed via
+[helm-ag][].
+
+Say you want to replace all `foo` occurrences by `bar` in your current project:
+- initiate a search with <kbd>SPC /</kbd>
+- enter in edit mode with <kbd>C-c C-e</kbd>
+- go to the occurrence and enter in `iedit state` with <kbd>SPC s e</kbd>
+- edit the occurrences then leave the `iedit state`
+- press <kbd>C-c C-c</kbd>
+
+**Note** in Spacemacs, `helm-ag` despite its name works with `ack` and `pt` as
+well.
+
 ### Commenting
 
 Comments are handled by [evil-nerd-commenter][], it's bound to the following keys.
@@ -2134,9 +2206,12 @@ Key Binding          | Function
 Key Binding          | Function
 ---------------------|------------------------------------------------------------
 <kbd>SPC m e $</kbd> | go to end of line and evaluate last sexp
+<kbd>SPC m e b</kbd> | evaluate buffer
+<kbd>SPC m e c</kbd> | evaluate current form (a `def` or a `set`)
 <kbd>SPC m e e</kbd> | evaluate last sexp
 <kbd>SPC m e f</kbd> | evaluate current defun
 <kbd>SPC m e l</kbd> | go to end of line and evaluate last sexp
+<kbd>SPC m e r</kbd> | evaluate region
 
 Key Binding          | Function
 ---------------------|------------------------------------------------------------
@@ -2154,7 +2229,7 @@ encountered in the file tree.
 
 `Helm` is used whenever it is possible.
 
-To search in a project see [project searching](#project-searching).
+To search in a project see [project searching](#searching-in-a-project).
 
 `projectile` commands start with <kbd>p</kbd>:
 
@@ -2254,51 +2329,6 @@ setup the key on tabulation:
 <kbd>CTRL+j</kbd> | go to previous item
 <kbd>CTRL+k</kbd> | go to next item
 <kbd>CTRL+l</kbd> | go to next page
-
-### Org
-
-In `org`, [evil-org-mode][] is activated.
-
-    Key Binding       |                 Description
-----------------------|------------------------------------------------------------
-<kbd>SPC m a</kbd>    | org-agenda
-<kbd>SPC m A</kbd>    | org-archive-subtree
-<kbd>SPC m c</kbd>    | org-capture
-<kbd>SPC m C</kbd>    | evil-org-recompute-clocks
-<kbd>SPC m d</kbd>    | org-deadline
-<kbd>SPC m e</kbd>    | org-export-dispatch
-<kbd>SPC m i</kbd>    | org-clock-in
-<kbd>SPC m l</kbd>    | evil-org-open-links
-<kbd>SPC m m</kbd>    | org-ctrl-c-ctrl-c
-<kbd>SPC m o</kbd>    | org-clock-out
-<kbd>SPC m r</kbd>    | org-refile
-<kbd>SPC m s</kbd>    | org-schedule
-<kbd>SPC m t</kbd>    | org-show-todo-tree
-<kbd>gh</kbd>         | outline-up-heading
-<kbd>gj</kbd>         | org-forward-heading-same-level
-<kbd>gk</kbd>         | org-backward-heading-same-level
-<kbd>gl</kbd>         | outline-next-visible-heading
-<kbd>t</kbd>          | org-todo
-<kbd>T</kbd>          | org-insert-todo-heading nil
-<kbd>H</kbd>          | org-beginning-of-line
-<kbd>L</kbd>          | org-end-of-line
-<kbd>o</kbd>          | always-insert-item
-<kbd>O</kbd>          | org-insert-heading
-<kbd>$</kbd>          | org-end-of-line
-<kbd>^</kbd>          | org-beginning-of-line
-<kbd><</kbd>          | org-metaleft
-<kbd>></kbd>          | org-metaright
-<kbd>TAB</kbd>        | org-cycle
-<kbd>M-l</kbd>        | org-metaright
-<kbd>M-h</kbd>        | org-metaleft
-<kbd>M-k</kbd>        | org-metaup
-<kbd>M-j</kbd>        | org-metadown
-<kbd>M-L</kbd>        | org-shiftmetaright
-<kbd>M-H</kbd>        | org-shiftmetaleft
-<kbd>M-K</kbd>        | org-shiftmetaup
-<kbd>M-J</kbd>        | org-shiftmetadown
-<kbd>M-o</kbd>        | org-insert-heading+org-metaright
-<kbd>M-t</kbd>        | org-insert-todo-heading nil+ org-metaright
 
 ### Python
 
@@ -2458,6 +2488,7 @@ developers to elisp hackers!
 [ace-window]: https://github.com/abo-abo/ace-window
 [helm-link]: https://github.com/emacs-helm/helm
 [helm-doc]: https://github.com/emacs-helm/helm/wiki
+[helm-ag]: https://github.com/syohex/emacs-helm-ag
 [popwin]: http://www.emacswiki.org/emacs/PopWin
 [golden-ratio]: https://github.com/roman/golden-ratio.el
 [solarized-theme]: https://github.com/bbatsov/solarized-emacs
@@ -2471,6 +2502,7 @@ developers to elisp hackers!
 [sp]: https://github.com/Fuco1/smartparens
 [ag]: https://github.com/ggreer/the_silver_searcher
 [pt]: https://github.com/monochromegane/the_platinum_searcher
+[tcl]: https://core.tcl.tk/tcllib/doc/trunk/embedded/www/tcllib/files/apps/pt.html
 [flycheck]: https://github.com/flycheck
 [yasnippet]: https://github.com/capitaomorte/yasnippet
 [expand-region]: https://github.com/magnars/expand-region.el
@@ -2500,7 +2532,6 @@ developers to elisp hackers!
 [evil-args]: https://github.com/wcsmith/evil-args
 [evil-jumper]: https://github.com/bling/evil-jumper
 [evil-numbers]: https://github.com/cofi/evil-numbers
-[evil-org-mode]: https://github.com/edwtjo/evil-org-mode
 [evil-lisp-state]: https://github.com/syl20bnr/evil-lisp-state
 [Vim's Unite]: https://github.com/Shougo/unite.vim
 [git-gutter]: https://github.com/syohex/emacs-git-gutter-fringe

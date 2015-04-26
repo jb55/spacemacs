@@ -11,8 +11,10 @@
 ;;; License: GPLv3
 
 (defvar csharp-packages
-  '(company
-    omnisharp))
+  '(
+    company
+    omnisharp
+    ))
 
 (defvar csharp-excluded-packages '()
   "List of packages to exclude.")
@@ -65,4 +67,4 @@
 
 (when (configuration-layer/layer-usedp 'auto-completion)
   (defun csharp/post-init-company ()
-    (spacemacs|enable-company csharp-mode)))
+    (spacemacs|add-company-hook csharp-mode)))

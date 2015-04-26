@@ -16,11 +16,12 @@
 
 ;; We define prefix commands only for the sake of guide-key
 (setq spacemacs/key-binding-prefixes '(("a" .  "applications")
+                                       ("ai" . "applications-irc")
                                        ("as" . "applications-shells")
                                        ("b" .  "buffers")
                                        ("bm" . "buffers-move")
                                        ("c" .  "compile/comments")
-                                       ("C" .  "colors")
+                                       ("C" .  "capture/colors")
                                        ("e" .  "errors")
                                        ("f" .  "files")
                                        ("fe" . "files-emacs/spacemacs")
@@ -38,12 +39,13 @@
                                        ("q" .  "quit")
                                        ("r" .  "registers/rings")
                                        ("s" .  "search/symbol")
+                                       ("sw" .  "search-web")
                                        ("S" .  "spelling")
                                        ("t" .  "toggles")
                                        ("tC" . "toggles-colors")
                                        ("th" . "toggles-highlight")
                                        ("tm" . "toggles-modeline")
-                                       ("T" .  "themes")
+                                       ("T" .  "toggles/themes")
                                        ("w" .  "windows")
                                        ("wp" . "windows-popup")
                                        ("wS" . "windows-size")
@@ -53,7 +55,7 @@
                                        ("xm" . "text-move")
                                        ("xt" . "text-transpose")
                                        ("xw" . "text-words")
-                                       ("z" .  "z")))
+                                       ("z" .  "zoom")))
 (mapc (lambda (x) (spacemacs/declare-prefix (car x) (cdr x)))
       spacemacs/key-binding-prefixes)
 
@@ -110,8 +112,7 @@ It runs `tabulated-list-revert-hook', then calls `tabulated-list-print'."
 ;; Edit
 ;; ---------------------------------------------------------------------------
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (spacemacs|init-company-backends emacs-lisp-mode))
+(spacemacs|defvar-company-backends emacs-lisp-mode)
 ;; start scratch in text mode (usefull to get a faster Emacs load time
 ;; because it avoids autoloads of elisp modes)
 (setq initial-major-mode 'text-mode)
@@ -143,6 +144,12 @@ Can be installed with `brew install trash'."
 ;; auto fill breaks line beyond current-fill-column
 (setq-default default-fill-column 80)
 (spacemacs|diminish auto-fill-function " Ⓕ" " F")
+
+;; persistent abbreviation file
+(setq abbrev-file-name (concat spacemacs-cache-directory "abbrev_defs"))
+
+;; Save clipboard contents into kill-ring before replace them
+(setq save-interprogram-paste-before-kill t)
 
 ;; ---------------------------------------------------------------------------
 ;; UI

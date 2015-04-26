@@ -21,6 +21,7 @@
     git-timemachine
     gist
     github-browse-file
+    git-link
     ;; not up to date
     ;; helm-gist
     magit
@@ -222,7 +223,8 @@ which require an initialization must be listed explicitly in the list.")
             magit-completing-read-function 'magit-ido-completing-read)
       ;; On Windows, we must use Git GUI to enter username and password
       ;; See: https://github.com/magit/magit/wiki/FAQ#windows-cannot-push-via-https
-      (setenv "GIT_ASKPASS" "git-gui--askpass")
+      (when (eq window-system 'w32)
+        (setenv "GIT_ASKPASS" "git-gui--askpass"))
       (evil-leader/set-key
         "gb" 'magit-blame-mode
         "gl" 'magit-log
@@ -320,6 +322,33 @@ which require an initialization must be listed explicitly in the list.")
     :init
     (evil-leader/set-key
       "gfb" 'github-browse-file)))
+
+(defun git/init-git-link ()
+  (use-package git-link
+    :if git-enable-github-support
+    :defer t
+    :init
+    (progn
+
+      (defun spacemacs/git-link-copy-url-only ()
+        "Only copy the generated link to the kill ring."
+        (interactive)
+        (let (git-link-open-in-browser)
+          (call-interactively 'git-link)))
+
+      (defun spacemacs/git-link-commit-copy-url-only ()
+        "Only copy the generated link to the kill ring."
+        (interactive)
+        (let (git-link-open-in-browser)
+          (call-interactively 'git-link-commit)))
+
+      (evil-leader/set-key
+        "gfl" 'git-link
+        "gfL" 'spacemacs/git-link-copy-url-only
+        "gfc" 'git-link-commit
+        "gfC" 'spacemacs/git-link-commit-copy-url-only)
+      ;; default is to open the generated link
+      (setq git-link-open-in-browser t))))
 
 (defun git/init-magit-gitflow ()
   (use-package magit-gitflow

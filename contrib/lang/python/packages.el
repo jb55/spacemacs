@@ -13,9 +13,9 @@
 (defvar python-packages
   '(
     anaconda-mode
-    ac-anaconda
     company
     company-anaconda
+    cython-mode
     eldoc
     evil-jumper
     flycheck
@@ -27,23 +27,9 @@
     python
     semantic
     smartparens
-    cython-mode
     )
   "List of all packages to install and/or initialize. Built-in packages
 which require an initialization must be listed explicitly in the list.")
-
-(defun python/init-ac-anaconda ()
-  (use-package ac-anaconda
-    :if (boundp 'ac-sources)
-    :defer t
-    :init
-    (progn
-      (add-hook 'python-mode-hook 'ac-anaconda-setup)
-      (evilify anaconda-nav-mode anaconda-nav-mode-map
-               (kbd "H") 'previous-error
-               (kbd "J") 'anaconda-nav-next-module
-               (kbd "K") 'anaconda-nav-previous-module
-               (kbd "L") 'next-error))))
 
 (defun python/init-anaconda-mode ()
   (use-package anaconda-mode
@@ -237,7 +223,7 @@ which require an initialization must be listed explicitly in the list.")
       (define-key inferior-python-mode-map (kbd "C-l") 'comint-clear-buffer)
       (define-key inferior-python-mode-map (kbd "C-r") 'comint-history-isearch-backward))))
 
-(defun python/init-flycheck ()
+(defun python/post-init-flycheck ()
   (add-hook 'python-mode-hook 'flycheck-mode))
 
 (defun python/init-hy-mode ()
@@ -266,15 +252,12 @@ which require an initialization must be listed explicitly in the list.")
 
 (when (configuration-layer/layer-usedp 'auto-completion)
   (defun python/post-init-company ()
-    (spacemacs|enable-company python-mode))
+    (spacemacs|add-company-hook python-mode))
 
   (defun python/init-company-anaconda ()
     (use-package company-anaconda
       :if (configuration-layer/package-usedp 'company)
       :defer t
       :init
-      ;; we don't use the yasnippet backend here because it
-      ;; produces some weird bug in company-anaconda back end
-      ;; (like the f, s, v suffix being at the wrong place in the
-      ;; completion menu)
-      (push 'company-anaconda company-backends-python-mode))))
+      (push '(company-anaconda :with company-yasnippet)
+            company-backends-python-mode))))

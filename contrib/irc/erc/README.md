@@ -32,14 +32,15 @@ To use this contribution add it to your `~/.spacemacs`
 
 Key Binding   | Description
 --------------|------------------------------------------------------------
-`<SPC> a e`   | Starts ERC
+`<SPC> a i e` | Starts ERC
+`<SPC> a i E` | Starts ERC via TLS/SSL
 `<SPC> m b`   | Switch between ERC buffers
 `<SPC> m d`   | Interactively input a user action and send it to IRC.
 `<SPC> m j`   | Join a channel, executes the /join command
-`<SPC> m n`   | Run "/names #channel" in the current channel. 
+`<SPC> m n`   | Run "/names #channel" in the current channel.
 `<SPC> m l`   | Run the /list command
 `<SPC> m p`   | Part from the channel
 `<SPC> m q`   | Quit server
 
-
-
+**Note** If you want to connect securely to an IRC server, you must run
+`erc-tls` command on <kbd>SPC a i E</kbd> instead of the `erc` command.
