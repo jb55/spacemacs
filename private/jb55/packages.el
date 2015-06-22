@@ -10,27 +10,22 @@
 ;;
 ;;; License: GPLv3
 
-(defvar jb55-packages
+(setq jb55-packages
   '(
     jade-mode
-    coffee-mode
+    nix-mode
+    glsl-mode
     markdown-mode
-    markdown-toc
-    js2-mode
-    fill-column-indicator
-    )
-  "List of all packages to install and/or initialize. Built-in packages
-which require an initialization must be listed explicitly in the list.")
+    ))
 
-(defvar jb55-excluded-packages '()
-  "List of packages to exclude.")
+(defun jb55/init-nix-mode ()
+  (use-package nix-mode :defer t))
 
-;; For each package, define a function jb55/init-<package-jb55>
-;;
-;; (defun jb55/init-my-package ()
-;;   "Initialize my package"
-;;   )
-;;
-;; Often the body of an initialize function uses `use-package'
-;; For more info on `use-package', see readme:
-;; https://github.com/jwiegley/use-package
+(defun jb55/init-jade-mode ()
+  (use-package jade-mode :defer t))
+
+(defun jb55/init-markdown-mode ()
+  (use-package markdown-mode :defer t))
+
+(defun jb55/init-glsl-mode ()
+  (use-package glsl-mode :defer t))
