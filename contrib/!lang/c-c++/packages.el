@@ -13,6 +13,7 @@
 (setq c-c++-packages
   '(
     cc-mode
+    disaster
     clang-format
     cmake-mode
     company
@@ -43,10 +44,17 @@
       (c-toggle-auto-newline 1)
       (evil-leader/set-key-for-mode 'c-mode
         "mga" 'projectile-find-other-file
+        "md" 'disaster
         "mgA" 'projectile-find-other-file-other-window)
       (evil-leader/set-key-for-mode 'c++-mode
         "mga" 'projectile-find-other-file
+        "md" 'disaster
         "mgA" 'projectile-find-other-file-other-window))))
+
+(defun c-c++/init-disaster ()
+  (use-package disaster
+    :defer t
+    :commands (disaster)))
 
 (defun c-c++/init-clang-format ()
   (use-package clang-format
