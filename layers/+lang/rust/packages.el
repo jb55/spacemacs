@@ -61,9 +61,6 @@
     (sp-local-pair 'rust-mode "'" nil :actions nil)))
 
 (defun rust/init-racer ()
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-copy-env "RUST_SRC_PATH"))
-
   (use-package racer
     :defer t
     :init
