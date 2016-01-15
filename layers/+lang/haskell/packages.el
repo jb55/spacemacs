@@ -29,9 +29,10 @@
   (use-package cmm-mode
     :defer t))
 
-(defun haskell/init-helm-hoogle ()
-  (use-package helm-hoogle
-    :defer t))
+(when (configuration-layer/layer-usedp 'spacemacs-helm)
+  (defun haskell/init-helm-hoogle ()
+    (use-package helm-hoogle
+      :defer t))
 
 (defun haskell/post-init-flycheck ()
   (spacemacs/add-flycheck-hook 'haskell-mode-hook))
