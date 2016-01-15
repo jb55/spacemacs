@@ -32,7 +32,9 @@
 (when (configuration-layer/layer-usedp 'spacemacs-helm)
   (defun haskell/init-helm-hoogle ()
     (use-package helm-hoogle
-      :defer t)))
+      :defer t
+      :init
+      (spacemacs/set-leader-keys-for-major-mode 'haskell-mode "hf" 'helm-hoogle))))
 
 (defun haskell/post-init-flycheck ()
   (spacemacs/add-flycheck-hook 'haskell-mode-hook))
@@ -150,7 +152,6 @@
         "hd"  'inferior-haskell-find-haddock
         "hh"  'hoogle
         "hH"  'hoogle-lookup-from-local
-        "hf"  'helm-hoogle
         "hi"  (lookup-key haskell-mode-map (kbd "C-c TAB"))
         "ht"  (lookup-key haskell-mode-map (kbd "C-c C-t"))
         "hT"  'spacemacs/haskell-process-do-type-on-prev-line
