@@ -32,7 +32,7 @@
 (when (configuration-layer/layer-usedp 'spacemacs-helm)
   (defun haskell/init-helm-hoogle ()
     (use-package helm-hoogle
-      :defer t))
+      :defer t)))
 
 (defun haskell/post-init-flycheck ()
   (spacemacs/add-flycheck-hook 'haskell-mode-hook))
