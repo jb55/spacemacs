@@ -17,7 +17,9 @@
     :commands notmuch
     :init
     (progn
-      (spacemacs/set-leader-keys "aN" 'notmuch)
+      (spacemacs/declare-prefix "aN" "notmuch")
+      (spacemacs/set-leader-keys "aNN" 'notmuch)
+      (spacemacs/set-leader-keys "aNn" 'helm-notmuch)
       (load-library "org-notmuch"))
     :config
     (progn
@@ -32,10 +34,7 @@
       ;; notmuch-hello-mode-map ;;
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (evilified-state-evilify-map notmuch-hello-mode-map
-        :mode notmuch-hello-mode
-        :bindings
-        (kbd "S") 'helm-notmuch
-        )
+        :mode notmuch-hello-mode)
 
       ;;;;;;;;;;;;;;;;;;;;;;;
       ;; notmuch-show mode ;;
@@ -78,8 +77,11 @@
       ;; notmuch-tree-mode-map ;;
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (evilified-state-evilify-map notmuch-tree-mode-map
-      :mode notmuch-tree-mode
-      :bindings)
+        :mode notmuch-tree-mode
+        :bindings
+        (kbd "d") 'spacemacs/notmuch-message-delete-down
+        (kbd "D") 'spacemacs/notmuch-message-delete-up
+        (kbd "M") 'compose-mail-other-frame)
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; notmuch-search-mode-map ;;
