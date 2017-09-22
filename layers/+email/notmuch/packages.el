@@ -61,6 +61,7 @@
         "sd" 'notmuch-show-stash-date
         "sc" 'notmuch-show-stash-cc
         ;; patch
+        "Po" 'spacemacs/notmuch-show-open-github-patch
         "Pa" 'spacemacs/notmuch-git-apply-patch
         "PA" 'spacemacs/notmuch-git-apply-patch-part
         )
