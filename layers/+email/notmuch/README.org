@@ -63,10 +63,11 @@ Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 
 ** Global bindings
 
-| Keybinding  | Command            |
-|-------------+--------------------|
-| ~SPC a N N~ | Start notmuch      |
-| ~SPC a N n~ | Start helm notmuch |
+| Keybinding  | Command                     |
+|-------------+-----------------------------|
+| ~SPC a N N~ | Start notmuch               |
+| ~SPC a N n~ | Start helm notmuch          |
+| ~SPC a N j~ | Start a notmuch jump search |
 
 ** Hello mode
 
