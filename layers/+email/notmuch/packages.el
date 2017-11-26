@@ -77,6 +77,7 @@
         ;; `p'. Adding a binding for the previous function to `C-p' becomes
         ;; handy while navigation messages back and forth.
         (kbd "C-p")   'notmuch-show-previous-message
+        (kbd "n")   'notmuch-show-next-open-message
         (kbd "o")   'notmuch-show-open-or-close-all
         (kbd "O")   'spacemacs/notmuch-show-close-all
         )
