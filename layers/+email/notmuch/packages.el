@@ -21,6 +21,7 @@
       (spacemacs/set-leader-keys "aNN" 'notmuch)
       (spacemacs/set-leader-keys "aNi" 'spacemacs/notmuch-inbox)
       (spacemacs/set-leader-keys "aNj" 'notmuch-jump-search)
+      (spacemacs/set-leader-keys "aNs" 'notmuch-search)
       (spacemacs/set-leader-keys "aNn" 'helm-notmuch)
       (load-library "org-notmuch"))
     :config

@@ -68,6 +68,7 @@ Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 | ~SPC a N N~ | Start notmuch               |
 | ~SPC a N n~ | Start helm notmuch          |
 | ~SPC a N j~ | Start a notmuch jump search |
+| ~SPC a N s~ | Start a notmuch search      |
 
 ** Hello mode
 
