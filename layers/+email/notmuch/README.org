@@ -37,7 +37,6 @@ In order to use this layer you must install notmuch separately.
 
 To install not much follow the instructions in [[https://notmuchmail.org/notmuch-emacs/#index2h2][installation instructions]].
 
-
 Then add this layer to your =~/.spacemacs=. You will need to add =notmuch= to
 the existing =dotspacemacs-configuration-layers= list in this file.
 
@@ -58,7 +57,6 @@ You could use thunderbird
 http://pragmaticemacs.com/emacs/use-emacs-for-thunderbird-emails/
 
 *** Sending emails with msmtp
-
 Download and Install [[http://msmtp.sourceforge.net/download.html][msmtp]]
 
 Configure =~/.mailrc= with the path where =msmtp= is found.
@@ -71,7 +69,6 @@ set sendmail="/usr/local/bin/msmtp"
 
 Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 
-
 * Key bindings
 ** Global bindings
 
@@ -83,16 +80,16 @@ Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 | ~SPC a N s~ | Start a notmuch search      |
 
 ** Hello mode
-
 **** Evilified state
+
 | Keybinding | Command                     |
 |------------+-----------------------------|
 | ~J~        | Jump to a saved search      |
 | ~s~        | Show threads matching QUERY |
 
 ** Search mode
-
 **** Evilified state
+
 | Keybinding | Command                   |
 |------------+---------------------------|
 | ~J~        | Jump to saved search      |
@@ -101,9 +98,9 @@ Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 | ~-~        | [Message] Remove tags     |
 | ~a~        | [Message] Archive         |
 
-
 ** Tree mode
 **** Evilified state
+
 | Keybinding | Command                   |
 |------------+---------------------------|
 | ~*~        | [Thread]  Add/Remove tags |
@@ -112,7 +109,6 @@ Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 | ~a~        | [Message] Archive         |
 
 ** Show mode
-
 
 | Keybinding      | Command                                                                        |
 |-----------------+--------------------------------------------------------------------------------|
@@ -141,26 +137,26 @@ Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 
 **** Evilified state
 
-| Keybinding | Description                       |
-|------------+-----------------------------------|
-| ~o~        | Open all messages                 |
-| ~O~        | Close all messages                |
-| ~n~        | Show next open message            |
-| ~N~        | Show next message                 |
-| ~p~        | Show previous open message        |
-| ~P~        | Show previous message             |
-| ~C-n~      | Show next thread                  |
-| ~C-p~      | Show previous thread              |
-| ~d~        | Delete messages down              |
-| ~D~        | Delete messages up                |
-| ~J~        | Jump search                       |
-| ~L~        | Filter current search             |
-| ~gf~       | Find file or URL at point         |
-| ~gg~       | Jump to top                       |
-| ~G~        | Jump to bottom                    |
-| ~gr~       | Refresh buffer                    |
-| ~gR~       | Refresh all buffers               |
-| ~m~        | Compose mail                      |
+| Keybinding | Description                |
+|------------+----------------------------|
+| ~o~        | Open all messages          |
+| ~O~        | Close all messages         |
+| ~n~        | Show next open message     |
+| ~N~        | Show next message          |
+| ~p~        | Show previous open message |
+| ~P~        | Show previous message      |
+| ~C-n~      | Show next thread           |
+| ~C-p~      | Show previous thread       |
+| ~d~        | Delete messages down       |
+| ~D~        | Delete messages up         |
+| ~J~        | Jump search                |
+| ~L~        | Filter current search      |
+| ~gf~       | Find file or URL at point  |
+| ~gg~       | Jump to top                |
+| ~G~        | Jump to bottom             |
+| ~gr~       | Refresh buffer             |
+| ~gR~       | Refresh all buffers        |
+| ~m~        | Compose mail               |
 
 * See also
 Refer to the official notmuch website for more information.
