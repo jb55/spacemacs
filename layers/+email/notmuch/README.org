@@ -3,12 +3,14 @@
 [[file:notmuch-logo.png]]
 
 * Table of Contents                                         :TOC_4_gh:noexport:
+- [[#description][Description]]
+  - [[#features][Features:]]
 - [[#install][Install]]
   - [[#sending-and-receiving-emails][Sending and Receiving emails]]
     - [[#receiving-emails][Receiving emails]]
     - [[#sending-emails-with-thunderbird][Sending emails with Thunderbird]]
     - [[#sending-emails-with-msmtp][Sending emails with msmtp]]
-- [[#commands][Commands]]
+- [[#key-bindings][Key bindings]]
   - [[#global-bindings][Global bindings]]
   - [[#hello-mode][Hello mode]]
       - [[#evilified-state][Evilified state]]
@@ -19,6 +21,16 @@
   - [[#show-mode][Show mode]]
       - [[#evilified-state-3][Evilified state]]
 - [[#see-also][See also]]
+
+* Description
+Notmuch offers a fast, global-search and tag-based email system to
+use within your text editor or in a terminal.
+
+This layer integrates notmuch emacs package into spacemacs.
+
+** Features:
+  - Email searching
+  - Email tagging
 
 * Install
 In order to use this layer you must install notmuch separately.
@@ -59,8 +71,8 @@ set sendmail="/usr/local/bin/msmtp"
 
 Configure =~/.msmtprc= [[http://msmtp.sourceforge.net/doc/msmtprc.txt][example]]
 
-* Commands
 
+* Key bindings
 ** Global bindings
 
 | Keybinding  | Command                     |
